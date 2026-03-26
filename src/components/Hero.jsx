@@ -36,13 +36,14 @@ function MountainCanvas() {
 
     /* ── Mountain normalized path (0..1 coords) ─────────────── */
     const PATH_NRM = [
-      [0,    1   ],
-      [0.05, 0.84],
-      [0.16, 0.73],
-      [0.28, 0.66],
-      [0.35, 0.61],
-      [0.42, 0.565],
-      [0.50, 0.52],   // ← main peak
+      [0,    1    ],
+      [0,    0.87 ],
+      [0.08, 0.80 ],
+      [0.18, 0.70 ],
+      [0.27, 0.63 ],
+      [0.35, 0.655],
+      [0.42, 0.60 ],
+      [0.50, 0.52 ],   // ← main peak
       [0.58, 0.60 ],
       [0.65, 0.655],
       [0.73, 0.62 ],
@@ -94,7 +95,7 @@ function MountainCanvas() {
     // Progress goes 0→1 (left base → main peak → right base)
     // We only want the ASCENDING leg (left bottom → peak ≈ t=0.46)
     // Then reset and repeat
-    const PEAK_T  = 0.46;     // normalized arc position of the peak
+    const PEAK_T  = 0.50;     // normalized arc position of the peak
     const TRAIL   = 0.07;     // trail length in normalized arc
     let ledT      = 0;
     const LED_SPD = 0.0018;   // speed per frame
