@@ -366,31 +366,30 @@ export default function Experience() {
             backdropFilter: 'blur(14px)',
             border: '1px solid rgba(197,165,90,0.28)',
             borderRadius: '8px',
-            overflow: 'hidden', position: 'relative',
+            position: 'relative',
             boxShadow: '0 0 70px rgba(197,165,90,0.07), 0 16px 60px rgba(0,0,0,0.45)',
           }}
         >
           <div style={{ height: '2px', background: 'linear-gradient(90deg,#C5A55A,rgba(197,165,90,0.3),transparent)' }} />
 
-          <motion.div
-            animate={{ opacity: [0.3, 0.7, 0.3] }}
-            transition={{ duration: 3.5, repeat: Infinity }}
-            style={{
-              position: 'absolute', top: '-60%', left: '5%', right: '5%', bottom: '-60%',
-              background: 'radial-gradient(ellipse at center, rgba(197,165,90,0.06) 0%, transparent 70%)',
-              pointerEvents: 'none',
-            }}
-          />
-
-          <motion.div
-            animate={{ x: ['-100%', '280%'] }}
-            transition={{ duration: 5, repeat: Infinity, repeatDelay: 4, ease: 'easeInOut' }}
-            style={{
-              position: 'absolute', top: 0, bottom: 0, width: '20%',
-              background: 'linear-gradient(90deg, transparent, rgba(197,165,90,0.05), transparent)',
-              pointerEvents: 'none',
-            }}
-          />
+          <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: '8px', pointerEvents: 'none', zIndex: 0 }}>
+            <motion.div
+              animate={{ opacity: [0.3, 0.7, 0.3] }}
+              transition={{ duration: 3.5, repeat: Infinity }}
+              style={{
+                position: 'absolute', top: '-60%', left: '5%', right: '5%', bottom: '-60%',
+                background: 'radial-gradient(ellipse at center, rgba(197,165,90,0.06) 0%, transparent 70%)',
+              }}
+            />
+            <motion.div
+              animate={{ x: ['-100%', '280%'] }}
+              transition={{ duration: 5, repeat: Infinity, repeatDelay: 4, ease: 'easeInOut' }}
+              style={{
+                position: 'absolute', top: 0, bottom: 0, width: '20%',
+                background: 'linear-gradient(90deg, transparent, rgba(197,165,90,0.05), transparent)',
+              }}
+            />
+          </div>
 
           <div style={{
             padding: 'clamp(2rem,4vw,3rem)',
@@ -448,7 +447,7 @@ export default function Experience() {
             </div>
 
             {/* Right: neon-traced SVG icon */}
-            <div style={{
+            <div className="community-icon-wrap" style={{
               flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
               padding: '1rem',
               position: 'relative',
@@ -566,8 +565,9 @@ export default function Experience() {
         }
         @media (max-width: 540px) {
           #experiencia .exp-cards { grid-template-columns: 1fr !important; }
-          #experiencia .community-inner { flex-direction: row !important; align-items: center !important; }
-          .community-svg { width: 100px !important; height: 100px !important; }
+          #experiencia .community-inner { flex-direction: column !important; align-items: flex-start !important; position: relative !important; }
+          .community-icon-wrap { position: absolute !important; top: 0 !important; right: 0 !important; padding: 0.5rem !important; opacity: 0.85; }
+          .community-svg { width: 80px !important; height: 80px !important; }
         }
       `}</style>
     </section>

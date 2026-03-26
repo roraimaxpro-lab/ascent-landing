@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 
 const LEVELS = [
@@ -138,6 +138,12 @@ function FlowConnector({ visible, delay }) {
 export default function Ecosystem() {
   const ref = useRef(null);
   const visible = useInView(ref, { once: true, amount: 0.06 });
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 640);
+  useEffect(() => {
+    const h = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener('resize', h);
+    return () => window.removeEventListener('resize', h);
+  }, []);
 
   return (
     <section ref={ref} style={{
@@ -263,7 +269,8 @@ export default function Ecosystem() {
         {/* ── CIRCLES ROW ── */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          gap: 'clamp(1rem,4vw,3rem)', flexWrap: 'wrap',
+          flexDirection: isMobile ? 'column' : 'row',
+          gap: isMobile ? '1.5rem' : 'clamp(1rem,4vw,3rem)',
           marginBottom: 'clamp(3rem,6vw,5rem)',
           position: 'relative',
         }}>
@@ -281,7 +288,7 @@ export default function Ecosystem() {
             const isMain = i === 0;
 
             return (
-              <div key={lvl.name} style={{ display: 'flex', alignItems: 'center', gap: 'clamp(0.8rem,2.5vw,2rem)' }}>
+              <div key={lvl.name} style={{ display: 'flex', alignItems: 'center', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '1rem' : 'clamp(0.8rem,2.5vw,2rem)' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px' }}>
 
                   {/* Circle wrapper */}
@@ -391,7 +398,9 @@ export default function Ecosystem() {
 
                 {/* Flow connector */}
                 {i < LEVELS.length - 1 && (
-                  <FlowConnector visible={visible} delay={0.7 + i * 0.15} />
+                  <div style={isMobile ? { transform: 'rotate(90deg)' } : undefined}>
+                    <FlowConnector visible={visible} delay={0.7 + i * 0.15} />
+                  </div>
                 )}
               </div>
             );

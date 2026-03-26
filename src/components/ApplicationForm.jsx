@@ -291,6 +291,7 @@ export default function ApplicationForm() {
 
           {/* ── RIGHT: Form ── */}
           <motion.div
+            className="apply-form-card"
             initial={{ opacity: 0, y: 40, scale: 0.97 }}
             animate={visible ? { opacity: 1, y: 0, scale: 1 } : {}}
             transition={{ duration: 0.9, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
@@ -476,7 +477,16 @@ export default function ApplicationForm() {
       <style>{`
         @media (max-width: 860px) {
           #aplicar .apply-layout {
-            grid-template-columns: 1fr !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+          }
+          #aplicar .apply-layout > * {
+            width: 100% !important;
+            max-width: 500px !important;
+          }
+          #aplicar .apply-form-card {
+            position: relative !important;
           }
         }
       `}</style>

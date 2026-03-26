@@ -70,21 +70,21 @@ function ScadiqTimeline({ visible }) {
 
   const item = SCADIQ[active];
 
-  const nodeSize = isMobile ? '44px' : 'clamp(52px,7vw,72px)';
-  const letterSize = isMobile ? '1.2rem' : 'clamp(1.3rem,2.8vw,1.9rem)';
+  const nodeSize = isMobile ? '40px' : 'clamp(52px,7vw,72px)';
+  const letterSize = isMobile ? '1rem' : 'clamp(1.3rem,2.8vw,1.9rem)';
   const numSize = isMobile ? '9px' : '10px';
 
   return (
     <div>
       {/* ── PIPELINE ROW ── */}
       <div style={{ position: 'relative', padding: isMobile ? '1.8rem 0 1rem' : '2.5rem 0 1.5rem',
-        overflowX: isMobile ? 'auto' : 'visible',
+        overflowX: 'visible',
       }}>
-        <div style={{ minWidth: isMobile ? '420px' : 'auto', position: 'relative' }}>
+        <div style={{ position: 'relative' }}>
 
         {/* Base line */}
         <div style={{
-          position: 'absolute', top: isMobile ? '38px' : '50%',
+          position: 'absolute', top: isMobile ? '20px' : '50%',
           left: '4%', right: '4%', height: '2px',
           background: 'rgba(197,165,90,0.12)',
           transform: isMobile ? 'none' : 'translateY(-50%)', zIndex: 0,
@@ -96,7 +96,7 @@ function ScadiqTimeline({ visible }) {
           animate={visible ? { width: '92%' } : {}}
           transition={{ duration: 1.1, delay: 0.3, ease: [0.4, 0, 0.2, 1] }}
           style={{
-            position: 'absolute', top: isMobile ? '38px' : '50%', left: '4%',
+            position: 'absolute', top: isMobile ? '20px' : '50%', left: '4%',
             height: '2px',
             background: 'linear-gradient(90deg, #C5A55A, #f0d888, #C5A55A)',
             transform: isMobile ? 'none' : 'translateY(-50%)',
@@ -108,7 +108,7 @@ function ScadiqTimeline({ visible }) {
         {/* Traveling pulse dot */}
         {lineDrawn && (
           <div style={{
-            position: 'absolute', top: isMobile ? '38px' : '50%',
+            position: 'absolute', top: isMobile ? '20px' : '50%',
             left: `calc(4% + ${pulsePos * 92}%)`,
             transform: isMobile ? 'translateX(-50%)' : 'translate(-50%, -50%)',
             zIndex: 3, width: '10px', height: '10px', borderRadius: '50%',
@@ -133,7 +133,7 @@ function ScadiqTimeline({ visible }) {
                 onClick={() => setActive(i)}
                 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',
                   gap: isMobile ? '6px' : '10px', cursor: 'pointer',
-                  flexShrink: 0, width: isMobile ? '60px' : undefined,
+                  flexShrink: 0, width: isMobile ? '48px' : undefined,
                 }}
               >
                 {/* Circle */}
