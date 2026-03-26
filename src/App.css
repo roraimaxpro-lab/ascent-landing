@@ -1,0 +1,8 @@
+/* App-level resets */
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+input, textarea, select {
+  font-family: 'Montserrat', sans-serif;
+}

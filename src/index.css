@@ -1,0 +1,95 @@
+/* ASCENT — Global Styles */
+
+:root {
+  /* Brand Colors */
+  --navy: #0B1624;
+  --navy-mid: #132238;
+  --navy-light: #1A2D47;
+  --gold: #C5A55A;
+  --gold-light: #D4BA7A;
+  --gold-dark: #9E8344;
+  --white: #FFFFFF;
+  --slate: #8A9AB5;
+  --cream: #FAF8F4;
+
+  /* Typography */
+  --font-main: 'Montserrat', sans-serif;
+  --font-editorial: 'Playfair Display', serif;
+  --font-tech: 'Courier Prime', monospace;
+
+  font-family: var(--font-main);
+  background: var(--navy);
+  color: var(--white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  background: var(--navy);
+  overflow-x: hidden;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+  color: var(--white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-main);
+  font-weight: 700;
+}
+
+p {
+  line-height: 1.7;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  font-family: var(--font-main);
+  border: none;
+  outline: none;
+}
+
+img {
+  max-width: 100%;
+}
+
+/* Scrollbar — desktop only */
+@media (min-width: 769px) {
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--navy);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--gold-dark);
+    border-radius: 3px;
+  }
+}
+
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+}

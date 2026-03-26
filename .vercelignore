@@ -1,0 +1,10 @@
+# Local dev server — not used in production (Vercel uses api/ serverless functions)
+server.js
+
+# Development files
+.env
+.env.local
+.env.*.local
+
+# Source (Vercel builds from this but doesn't need it after build)
+node_modules
