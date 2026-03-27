@@ -143,13 +143,16 @@ function CircleNode({ visible }) {
 /* ── Content reveal ── */
 function ContentReveal() {
   const lvl = NEO;
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, amount: 0.12 });
+
   return (
-    <div style={{ position: 'relative', overflow: 'hidden' }}>
+    <div ref={ref} style={{ position: 'relative', overflow: 'hidden' }}>
 
       {/* Flash burst on entry */}
       <motion.div
         initial={{ opacity: 0.8, scaleX: 0 }}
-        animate={{ opacity: 0, scaleX: 1 }}
+        animate={inView ? { opacity: 0, scaleX: 1 } : {}}
         transition={{ duration: 0.6, ease: 'easeOut' }}
         style={{
           position: 'absolute', top: 0, left: 0, right: 0, height: '100%',
@@ -161,7 +164,7 @@ function ContentReveal() {
       {/* Connector beam from above */}
       <motion.div
         initial={{ scaleY: 0, opacity: 1 }}
-        animate={{ scaleY: 1, opacity: 0 }}
+        animate={inView ? { scaleY: 1, opacity: 0 } : {}}
         transition={{ duration: 0.5 }}
         style={{
           position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
@@ -174,8 +177,8 @@ function ContentReveal() {
 
       {/* Top glow line */}
       <motion.div
-        initial={{ scaleX: 0, opacity: 1 }}
-        animate={{ scaleX: 1, opacity: 0.6 }}
+        initial={{ scaleX: 0, opacity: 0 }}
+        animate={inView ? { scaleX: 1, opacity: 0.6 } : {}}
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         style={{
           height: '1px', marginBottom: 'clamp(2rem,4vw,3rem)',
@@ -188,7 +191,7 @@ function ContentReveal() {
       {/* Badge */}
       <motion.div
         initial={{ opacity: 0, scale: 0.5, y: 10 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
+        animate={inView ? { opacity: 1, scale: 1, y: 0 } : {}}
         transition={{ duration: 0.5, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
         style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.6rem' }}
       >
@@ -219,8 +222,8 @@ function ContentReveal() {
           <motion.div
             key={word}
             initial={{ opacity: 0, y: 60, rotateX: -40, filter: 'blur(12px)' }}
-            animate={{ opacity: 1, y: 0, rotateX: 0, filter: 'blur(0px)' }}
-            transition={{ duration: 0.65, delay: 0.15 + i * 0.12, ease: [0.22, 1, 0.36, 1] }}
+            animate={inView ? { opacity: 1, y: 0, rotateX: 0, filter: 'blur(0px)' } : {}}
+            transition={{ duration: 0.65, delay: 0.15 + i * 0.14, ease: [0.22, 1, 0.36, 1] }}
             style={{
               fontFamily: "'Montserrat',sans-serif", fontWeight: 900,
               fontSize: 'clamp(2rem,4.5vw,4rem)', letterSpacing: '-0.035em',
@@ -240,8 +243,8 @@ function ContentReveal() {
       {/* Animated divider with light sweep */}
       <motion.div
         initial={{ scaleX: 0 }}
-        animate={{ scaleX: 1 }}
-        transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        animate={inView ? { scaleX: 1 } : {}}
+        transition={{ duration: 0.8, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
         style={{
           position: 'relative', height: '1px', maxWidth: '600px', margin: '0 auto 1.8rem',
           background: `linear-gradient(90deg,transparent,rgba(${lvl.rgb},0.7) 30%,rgba(${lvl.rgb},0.7) 70%,transparent)`,
@@ -250,8 +253,8 @@ function ContentReveal() {
       >
         <motion.div
           initial={{ x: '-100%' }}
-          animate={{ x: '250%' }}
-          transition={{ duration: 1, delay: 0.9, ease: 'easeInOut' }}
+          animate={inView ? { x: '250%' } : {}}
+          transition={{ duration: 1, delay: 1.0, ease: 'easeInOut' }}
           style={{
             position: 'absolute', inset: '-2px', width: '25%',
             background: `linear-gradient(90deg,transparent,rgba(${lvl.rgb},1),white,rgba(${lvl.rgb},1),transparent)`,
@@ -263,8 +266,8 @@ function ContentReveal() {
       {/* Body */}
       <motion.p
         initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
-        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-        transition={{ duration: 0.6, delay: 0.5 }}
+        animate={inView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+        transition={{ duration: 0.65, delay: 0.6 }}
         style={{
           fontFamily: "'Montserrat',sans-serif", fontWeight: 400,
           fontSize: 'clamp(0.95rem,1.4vw,1.05rem)', lineHeight: 1.9,
@@ -279,14 +282,14 @@ function ContentReveal() {
           <motion.div
             key={b}
             initial={{ opacity: 0, x: -50, filter: 'blur(6px)' }}
-            animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-            transition={{ duration: 0.55, delay: 0.55 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+            animate={inView ? { opacity: 1, x: 0, filter: 'blur(0px)' } : {}}
+            transition={{ duration: 0.55, delay: 0.7 + i * 0.12, ease: [0.22, 1, 0.36, 1] }}
             style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}
           >
             <motion.div
               initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 0.4, delay: 0.55 + i * 0.1, type: 'spring', stiffness: 300 }}
+              animate={inView ? { scale: 1 } : {}}
+              transition={{ duration: 0.4, delay: 0.7 + i * 0.12, type: 'spring', stiffness: 300 }}
               style={{
                 width: 8, height: 8, borderRadius: '50%', flexShrink: 0, marginTop: 8,
                 background: `linear-gradient(135deg,${lvl.colorLight},${lvl.color})`,
@@ -303,9 +306,9 @@ function ContentReveal() {
 
       {/* Note */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.92, y: 20, filter: 'blur(10px)' }}
-        animate={{ opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' }}
-        transition={{ duration: 0.65, delay: 0.85, ease: [0.22, 1, 0.36, 1] }}
+        initial={{ opacity: 0, scale: 0.94, y: 24, filter: 'blur(10px)' }}
+        animate={inView ? { opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' } : {}}
+        transition={{ duration: 0.7, delay: 1.15, ease: [0.22, 1, 0.36, 1] }}
         style={{
           maxWidth: '620px', margin: '0 auto',
           padding: '1.1rem 1.8rem',
@@ -328,8 +331,8 @@ function ContentReveal() {
       {/* Bottom glow line */}
       <motion.div
         initial={{ scaleX: 0, opacity: 0 }}
-        animate={{ scaleX: 1, opacity: 0.4 }}
-        transition={{ duration: 0.9, delay: 1.0 }}
+        animate={inView ? { scaleX: 1, opacity: 0.4 } : {}}
+        transition={{ duration: 0.9, delay: 1.3 }}
         style={{
           height: '1px', marginTop: 'clamp(2rem,4vw,3rem)',
           background: `linear-gradient(90deg,transparent,rgba(${lvl.rgb},0.6) 30%,rgba(${lvl.rgb},0.6) 70%,transparent)`,
