@@ -1,89 +1,61 @@
-import { useRef, useState, useEffect } from 'react';
-import { motion, useInView, AnimatePresence } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
 
-const LEVELS = [
-  {
-    id: 'neo', name: 'NEO', sub: 'Despertar', scadiq: 'S + C', days: '2 días',
-    color: '#C5A55A', colorLight: '#f8ebb0', rgb: '197,165,90',
-    badge: 'PUERTA DE ENTRADA',
-    headline: ['Claridad,', 'dirección', 'y activación real.'],
-    body: 'En NEO aplicas la S y la C del método SCADIQ — las etapas de Scan y Comprehend. Aquí desarrollas la capacidad de leer tu negocio con más precisión, ganar claridad sobre lo que realmente importa y construir una base más sólida para decidir y actuar.',
-    bullets: [
-      'Scan: identificas con precisión lo que hoy frena tu crecimiento.',
-      'Comprehend: entiendes la raíz del problema, no solo los síntomas.',
-      'Dirección más firme y oferta más clara para el mercado.',
-      'Conexiones estratégicas reales desde el primer día.',
-    ],
-    note: 'NEO es una experiencia completa en sí misma. Las etapas siguientes existen para quienes, después de vivirla, decidan continuar el recorrido dentro del método.',
-    size: 300,
-  },
-  {
-    id: 'mid', name: 'MID', sub: 'Construir', scadiq: 'A + D', days: '2 días',
-    color: '#8AAFD4', colorLight: '#c8dff5', rgb: '138,175,212',
-    badge: 'SIGUIENTE ETAPA',
-    headline: ['Estructura,', 'decisiones', 'y ejecución.'],
-    body: 'En MID aplicas la A y la D del método SCADIQ — las etapas de Analyze-Act y Decide. La claridad ganada en NEO se convierte en estructura, decisiones más firmes y un plan de ejecución con criterio real.',
-    bullets: [
-      'Analyze-Act: conviertes análisis en movimiento concreto.',
-      'Decide: fortaleces tu capacidad de decidir bajo presión.',
-      'Plan de 90 días construido con números reales.',
-    ],
-    note: 'Para quienes salieron de NEO con claridad y están listos para construir con más orden.',
-    size: 200,
-  },
-  {
-    id: 'pro', name: 'PRO', sub: 'Escalar', scadiq: 'I + Q', days: '3 días',
-    color: '#D4BA7A', colorLight: '#f2e4b0', rgb: '212,186,122',
-    badge: 'NIVEL AVANZADO',
-    headline: ['Liderazgo,', 'expansión', 'y visión de escala.'],
-    body: 'En PRO integras la I y la Q del método SCADIQ — las etapas de Implement y Quantum. Aquí el método se completa: lideras con mayor criterio, delegas con precisión y te mueves con visión dentro de un ecosistema que produce resultados reales.',
-    bullets: [
-      'Implement: ejecutas con sistemas, no con esfuerzo constante.',
-      'Quantum: operas desde una visión de mayor escala e impacto.',
-      'Deal Room, expansión y oportunidades dentro del ecosistema.',
-    ],
-    note: 'El nivel donde el método SCADIQ se completa y el ecosistema genera retorno real.',
-    size: 150,
-  },
-];
+const NEO = {
+  id: 'neo', name: 'NEO', sub: 'Despertar', scadiq: 'S + C', days: '2 días',
+  color: '#C5A55A', colorLight: '#f8ebb0', rgb: '197,165,90',
+  badge: 'EXPERIENCIA ASCENT',
+  headline: ['Claridad,', 'dirección', 'y activación real.'],
+  body: 'NEO es una experiencia diseñada para ayudarte a leer con más precisión la realidad actual de tu negocio, afinar tu dirección y fortalecer tu oferta, tu pitch y tus conexiones estratégicas. A través del método SCADIQ, construyes una base más sólida para decidir y moverte con mayor intención.',
+  bullets: [
+    'Scan: identificas con precisión lo que hoy frena tu crecimiento.',
+    'Comprehend: entiendes la raíz del problema, no solo los síntomas.',
+    'Dirección más firme y oferta más clara para el mercado.',
+    'Conexiones estratégicas reales desde el primer día.',
+  ],
+  note: 'NEO es una experiencia completa. Diseñada para producir claridad real, conexiones estratégicas y un punto de partida más sólido para tu negocio.',
+};
 
 /* ── Circle node ── */
-function CircleNode({ lvl, isActive, onClick, visible, position }) {
-  const sz = lvl.size;
-  const rings = lvl.id === 'neo'
-    ? [{ r: 24, dur: 7, dash: true, ccw: false }, { r: 40, dur: 13, dash: false, ccw: true }, { r: 58, dur: 22, dash: true, ccw: false }]
-    : lvl.id === 'mid'
-    ? [{ r: 18, dur: 9, dash: true, ccw: false }, { r: 30, dur: 16, dash: false, ccw: true }]
-    : [{ r: 14, dur: 11, dash: true, ccw: false }, { r: 22, dur: 18, dash: false, ccw: true }];
-
-  const dotData = lvl.id === 'neo'
-    ? [{ r: 24, dur: 7, sz: 7, d: 0 }, { r: 40, dur: 13, sz: 4.5, d: 1.5 }, { r: 58, dur: 22, sz: 3, d: 3 }]
-    : lvl.id === 'mid'
-    ? [{ r: 18, dur: 9, sz: 5, d: 0 }, { r: 30, dur: 16, sz: 3, d: 1.2 }]
-    : [{ r: 14, dur: 11, sz: 4, d: 0 }, { r: 22, dur: 18, sz: 2.5, d: 1 }];
+function CircleNode({ visible }) {
+  const lvl = NEO;
+  const sz = 300;
+  const rings = [
+    { r: 24, dur: 7,  dash: true,  ccw: false },
+    { r: 40, dur: 13, dash: false, ccw: true  },
+    { r: 58, dur: 22, dash: true,  ccw: false },
+  ];
+  const dotData = [
+    { r: 24, dur: 7,  sz: 7,   d: 0   },
+    { r: 40, dur: 13, sz: 4.5, d: 1.5 },
+    { r: 58, dur: 22, sz: 3,   d: 3   },
+  ];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
-      <div onClick={onClick} style={{ position: 'relative', width: sz, height: sz, cursor: 'pointer', flexShrink: 0 }}>
+      <div style={{ position: 'relative', width: sz, height: sz, flexShrink: 0 }}>
 
         {/* Active burst pulses */}
-        {isActive && [0, 0.7, 1.4, 2.1].map((delay, i) => (
+        {[0, 0.7, 1.4, 2.1].map((delay, i) => (
           <motion.div key={i}
             initial={{ scale: 1, opacity: 0.7 }}
             animate={{ scale: 2.5 + i * 0.2, opacity: 0 }}
             transition={{ duration: 2.8, delay, repeat: Infinity, ease: 'easeOut' }}
-            style={{ position: 'absolute', inset: 0, borderRadius: '50%', border: `1px solid rgba(${lvl.rgb},0.55)`, pointerEvents: 'none' }}
+            style={{
+              position: 'absolute', inset: 0, borderRadius: '50%',
+              border: `1px solid rgba(${lvl.rgb},0.55)`, pointerEvents: 'none',
+            }}
           />
         ))}
 
         {/* Wide ambient glow */}
         <motion.div
-          animate={{ opacity: isActive ? [0.6, 1, 0.6] : [0.08, 0.2, 0.08], scale: isActive ? [1, 1.15, 1] : 1 }}
+          animate={{ opacity: [0.6, 1, 0.6], scale: [1, 1.15, 1] }}
           transition={{ duration: 3.5, repeat: Infinity }}
           style={{
             position: 'absolute', inset: `-${sz * 0.22}px`, borderRadius: '50%',
-            background: `radial-gradient(circle, rgba(${lvl.rgb},${isActive ? 0.38 : 0.1}) 0%, transparent 65%)`,
-            filter: 'blur(20px)', pointerEvents: 'none', transition: 'opacity 0.6s',
+            background: `radial-gradient(circle, rgba(${lvl.rgb},0.38) 0%, transparent 65%)`,
+            filter: 'blur(20px)', pointerEvents: 'none',
           }}
         />
 
@@ -94,8 +66,8 @@ function CircleNode({ lvl, isActive, onClick, visible, position }) {
             transition={{ duration: r.dur, repeat: Infinity, ease: 'linear' }}
             style={{
               position: 'absolute', inset: `-${r.r}px`, borderRadius: '50%',
-              border: `1px ${r.dash ? 'dashed' : 'solid'} rgba(${lvl.rgb},${isActive ? (i === 0 ? 0.65 : i === 1 ? 0.35 : 0.18) : 0.12})`,
-              transition: 'border-color 0.5s', pointerEvents: 'none',
+              border: `1px ${r.dash ? 'dashed' : 'solid'} rgba(${lvl.rgb},${i === 0 ? 0.65 : i === 1 ? 0.35 : 0.18})`,
+              pointerEvents: 'none',
             }}
           />
         ))}
@@ -112,7 +84,6 @@ function CircleNode({ lvl, isActive, onClick, visible, position }) {
               width: d.sz, height: d.sz, borderRadius: '50%', background: lvl.color,
               transform: 'translateY(-50%)',
               boxShadow: `0 0 ${d.sz * 3}px ${lvl.color}, 0 0 ${d.sz * 7}px rgba(${lvl.rgb},0.45)`,
-              opacity: isActive ? 1 : 0.3, transition: 'opacity 0.5s',
             }} />
           </motion.div>
         ))}
@@ -120,71 +91,58 @@ function CircleNode({ lvl, isActive, onClick, visible, position }) {
         {/* Core circle */}
         <motion.div
           animate={{
-            boxShadow: isActive
-              ? [`0 0 0 2px rgba(${lvl.rgb},0.9), 0 0 30px rgba(${lvl.rgb},0.7), 0 0 80px rgba(${lvl.rgb},0.5), 0 0 160px rgba(${lvl.rgb},0.25)`,
-                 `0 0 0 2px rgba(${lvl.rgb},1), 0 0 50px rgba(${lvl.rgb},0.95), 0 0 120px rgba(${lvl.rgb},0.65), 0 0 240px rgba(${lvl.rgb},0.35)`,
-                 `0 0 0 2px rgba(${lvl.rgb},0.9), 0 0 30px rgba(${lvl.rgb},0.7), 0 0 80px rgba(${lvl.rgb},0.5), 0 0 160px rgba(${lvl.rgb},0.25)`]
-              : `0 0 0 1px rgba(${lvl.rgb},0.18), 0 0 14px rgba(${lvl.rgb},0.07)`,
+            boxShadow: [
+              `0 0 0 2px rgba(${lvl.rgb},0.9), 0 0 30px rgba(${lvl.rgb},0.7), 0 0 80px rgba(${lvl.rgb},0.5), 0 0 160px rgba(${lvl.rgb},0.25)`,
+              `0 0 0 2px rgba(${lvl.rgb},1), 0 0 50px rgba(${lvl.rgb},0.95), 0 0 120px rgba(${lvl.rgb},0.65), 0 0 240px rgba(${lvl.rgb},0.35)`,
+              `0 0 0 2px rgba(${lvl.rgb},0.9), 0 0 30px rgba(${lvl.rgb},0.7), 0 0 80px rgba(${lvl.rgb},0.5), 0 0 160px rgba(${lvl.rgb},0.25)`,
+            ],
           }}
-          transition={{ duration: 2.5, repeat: isActive ? Infinity : 0 }}
+          transition={{ duration: 2.5, repeat: Infinity }}
           style={{
             position: 'absolute', inset: 0, borderRadius: '50%',
-            background: isActive
-              ? `radial-gradient(circle at 38% 32%, rgba(${lvl.rgb},0.3) 0%, #07101e 60%)`
-              : 'radial-gradient(circle at 38% 32%, rgba(18,30,50,0.95) 0%, #050a10 70%)',
-            border: `${isActive ? 2.5 : 1.5}px solid rgba(${lvl.rgb},${isActive ? 0.95 : 0.2})`,
+            background: `radial-gradient(circle at 38% 32%, rgba(${lvl.rgb},0.3) 0%, #07101e 60%)`,
+            border: `2.5px solid rgba(${lvl.rgb},0.95)`,
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            gap: lvl.id === 'neo' ? 7 : 4,
-            transition: 'background 0.45s, border-color 0.45s',
+            gap: 7,
           }}
         >
           <span style={{
             display: 'inline-block',
             fontFamily: "'Montserrat',sans-serif", fontWeight: 900,
-            fontSize: lvl.id === 'neo' ? '2.8rem' : lvl.id === 'mid' ? '1.8rem' : '1.4rem',
-            letterSpacing: '0.08em', lineHeight: 1,
-            background: isActive
-              ? `linear-gradient(140deg,#fff8e8 0%,${lvl.colorLight} 30%,${lvl.color} 70%)`
-              : `linear-gradient(140deg,${lvl.colorLight},${lvl.color})`,
+            fontSize: '2.8rem', letterSpacing: '0.08em', lineHeight: 1,
+            background: `linear-gradient(140deg,#fff8e8 0%,${lvl.colorLight} 30%,${lvl.color} 70%)`,
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
             color: 'transparent',
-            filter: isActive ? `drop-shadow(0 0 24px rgba(${lvl.rgb},1))` : 'none',
-            transition: 'filter 0.45s',
+            filter: `drop-shadow(0 0 24px rgba(${lvl.rgb},1))`,
           }}>{lvl.name}</span>
           <span style={{
             fontFamily: "'Montserrat',sans-serif", fontWeight: 700,
-            fontSize: lvl.id === 'neo' ? '0.78rem' : lvl.id === 'mid' ? '0.68rem' : '0.6rem',
-            letterSpacing: '0.22em',
-            color: `rgba(${lvl.rgb},${isActive ? 1 : 0.45})`,
-            textShadow: isActive ? `0 0 14px rgba(${lvl.rgb},0.8)` : 'none',
-            transition: 'color 0.45s, text-shadow 0.45s',
+            fontSize: '0.78rem', letterSpacing: '0.22em',
+            color: `rgba(${lvl.rgb},1)`,
+            textShadow: `0 0 14px rgba(${lvl.rgb},0.8)`,
           }}>{lvl.scadiq}</span>
         </motion.div>
       </div>
 
-      {/* Label below */}
-      <div style={{ marginTop: lvl.id === 'neo' ? 20 : 16, textAlign: 'center' }}>
+      {/* Label below circle */}
+      <div style={{ marginTop: 20, textAlign: 'center' }}>
         <div style={{
-          fontFamily: "'Montserrat',sans-serif", fontWeight: 800,
-          fontSize: lvl.id === 'neo' ? '1rem' : '0.78rem',
-          color: isActive ? '#FFFFFF' : 'rgba(255,255,255,0.3)',
-          transition: 'color 0.4s',
-          textShadow: isActive ? `0 0 20px rgba(${lvl.rgb},0.5)` : 'none',
+          fontFamily: "'Montserrat',sans-serif", fontWeight: 800, fontSize: '1rem',
+          color: '#FFFFFF', textShadow: `0 0 20px rgba(${lvl.rgb},0.5)`,
         }}>{lvl.sub}</div>
         <div style={{
-          fontFamily: "'Montserrat',sans-serif", fontSize: lvl.id === 'neo' ? '0.66rem' : '0.58rem',
+          fontFamily: "'Montserrat',sans-serif", fontSize: '0.66rem',
           letterSpacing: '0.2em', textTransform: 'uppercase', marginTop: 3,
-          color: isActive ? lvl.color : `rgba(${lvl.rgb},0.28)`,
-          textShadow: isActive ? `0 0 14px rgba(${lvl.rgb},0.7)` : 'none',
-          transition: 'color 0.4s',
+          color: lvl.color, textShadow: `0 0 14px rgba(${lvl.rgb},0.7)`,
         }}>{lvl.days}</div>
       </div>
     </div>
   );
 }
 
-/* ── Animated content reveal ── */
-function ContentReveal({ lvl }) {
+/* ── Content reveal ── */
+function ContentReveal() {
+  const lvl = NEO;
   return (
     <div style={{ position: 'relative', overflow: 'hidden' }}>
 
@@ -246,7 +204,10 @@ function ContentReveal({ lvl }) {
             transition={{ duration: 1.6, repeat: Infinity }}
             style={{ width: 6, height: 6, borderRadius: '50%', background: lvl.color, boxShadow: `0 0 10px ${lvl.color}` }}
           />
-          <span style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 800, fontSize: '9.5px', letterSpacing: '0.42em', color: lvl.colorLight, textTransform: 'uppercase' }}>
+          <span style={{
+            fontFamily: "'Montserrat',sans-serif", fontWeight: 800,
+            fontSize: '9.5px', letterSpacing: '0.42em', color: lvl.colorLight, textTransform: 'uppercase',
+          }}>
             {lvl.badge}
           </span>
         </div>
@@ -313,12 +274,7 @@ function ContentReveal({ lvl }) {
       >{lvl.body}</motion.p>
 
       {/* Bullets — staggered fly-in */}
-      <motion.div
-        style={{
-          display: 'flex', flexDirection: 'column', gap: '0.75rem',
-          maxWidth: '640px', margin: '0 auto 2rem',
-        }}
-      >
+      <motion.div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxWidth: '640px', margin: '0 auto 2rem' }}>
         {lvl.bullets.map((b, i) => (
           <motion.div
             key={b}
@@ -345,7 +301,7 @@ function ContentReveal({ lvl }) {
         ))}
       </motion.div>
 
-      {/* Note — dramatic entrance */}
+      {/* Note */}
       <motion.div
         initial={{ opacity: 0, scale: 0.92, y: 20, filter: 'blur(10px)' }}
         animate={{ opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' }}
@@ -388,8 +344,7 @@ function ContentReveal({ lvl }) {
 export default function Ecosystem() {
   const ref = useRef(null);
   const visible = useInView(ref, { once: true, amount: 0.04 });
-  const [active, setActive] = useState(0);
-  const lvl = LEVELS[active];
+  const lvl = NEO;
 
   return (
     <section ref={ref} style={{ background: '#040A14', position: 'relative', overflow: 'hidden', padding: 'clamp(4rem,8vw,7rem) 1.5rem' }}>
@@ -403,12 +358,10 @@ export default function Ecosystem() {
         WebkitMaskImage: 'radial-gradient(ellipse 90% 90% at 50% 45%,black,transparent)',
       }} />
 
-      {/* Dynamic color atmosphere */}
+      {/* Atmosphere */}
       <motion.div
-        key={active}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
+        animate={{ opacity: [0.5, 1, 0.5] }}
+        transition={{ duration: 5, repeat: Infinity }}
         style={{
           position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
           width: '180vw', height: '75vh',
@@ -416,11 +369,9 @@ export default function Ecosystem() {
           filter: 'blur(80px)', pointerEvents: 'none',
         }}
       />
-
-      {/* Pulsing atmosphere */}
       <motion.div
-        animate={{ opacity: [0.5, 1, 0.5] }}
-        transition={{ duration: 5, repeat: Infinity }}
+        animate={{ opacity: [0.4, 0.8, 0.4] }}
+        transition={{ duration: 7, repeat: Infinity, delay: 1 }}
         style={{
           position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
           width: '180vw', height: '75vh',
@@ -434,96 +385,90 @@ export default function Ecosystem() {
       <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
 
         {/* HEADER */}
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={visible ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.9 }}
-          style={{ textAlign: 'center', marginBottom: 'clamp(3rem,6vw,5rem)' }}>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={visible ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.9 }}
+          style={{ textAlign: 'center', marginBottom: 'clamp(3rem,6vw,5rem)' }}
+        >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, marginBottom: '1.4rem' }}>
-            <motion.div initial={{ scaleX: 0 }} animate={visible ? { scaleX: 1 } : {}} transition={{ duration: 0.8, delay: 0.2 }}
-              style={{ height: 1, width: 70, background: 'linear-gradient(90deg,transparent,#C5A55A)', transformOrigin: 'right' }} />
-            <span style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 10, letterSpacing: '0.42em', color: '#C5A55A', textTransform: 'uppercase', fontWeight: 700 }}>El Sistema ASCENT</span>
-            <motion.div initial={{ scaleX: 0 }} animate={visible ? { scaleX: 1 } : {}} transition={{ duration: 0.8, delay: 0.2 }}
-              style={{ height: 1, width: 70, background: 'linear-gradient(90deg,#C5A55A,transparent)', transformOrigin: 'left' }} />
+            <motion.div
+              initial={{ scaleX: 0 }} animate={visible ? { scaleX: 1 } : {}} transition={{ duration: 0.8, delay: 0.2 }}
+              style={{ height: 1, width: 70, background: 'linear-gradient(90deg,transparent,#C5A55A)', transformOrigin: 'right' }}
+            />
+            <span style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 10, letterSpacing: '0.42em', color: '#C5A55A', textTransform: 'uppercase', fontWeight: 700 }}>
+              La Experiencia
+            </span>
+            <motion.div
+              initial={{ scaleX: 0 }} animate={visible ? { scaleX: 1 } : {}} transition={{ duration: 0.8, delay: 0.2 }}
+              style={{ height: 1, width: 70, background: 'linear-gradient(90deg,#C5A55A,transparent)', transformOrigin: 'left' }}
+            />
           </div>
-          <div style={{ fontFamily: "'Playfair Display',serif", fontStyle: 'italic', fontSize: 'clamp(1.3rem,2.8vw,2rem)', color: '#C5A55A', marginBottom: '0.15rem', textShadow: '0 0 40px rgba(197,165,90,0.4)' }}>El Ecosistema</div>
-          <div style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 900, fontSize: 'clamp(3.5rem,10vw,8.5rem)', letterSpacing: '-0.045em', lineHeight: 0.87, color: '#FFFFFF' }}>ASCENT</div>
-          <motion.p initial={{ opacity: 0 }} animate={visible ? { opacity: 1 } : {}} transition={{ delay: 0.4 }}
-            style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 400, fontSize: 'clamp(0.95rem,1.5vw,1.08rem)', lineHeight: 1.75, color: '#FFFFFF', margin: '1.6rem auto 0', maxWidth: '480px' }}>
-            Tres niveles bajo el método{' '}
+          <div style={{ fontFamily: "'Playfair Display',serif", fontStyle: 'italic', fontSize: 'clamp(1.3rem,2.8vw,2rem)', color: '#C5A55A', marginBottom: '0.15rem', textShadow: '0 0 40px rgba(197,165,90,0.4)' }}>
+            El Ecosistema
+          </div>
+          <div style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 900, fontSize: 'clamp(3.5rem,10vw,8.5rem)', letterSpacing: '-0.045em', lineHeight: 0.87, color: '#FFFFFF' }}>
+            ASCENT
+          </div>
+          <motion.p
+            initial={{ opacity: 0 }} animate={visible ? { opacity: 1 } : {}} transition={{ delay: 0.4 }}
+            style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 400, fontSize: 'clamp(0.95rem,1.5vw,1.08rem)', lineHeight: 1.75, color: '#FFFFFF', margin: '1.6rem auto 0', maxWidth: '480px' }}
+          >
+            Una experiencia diseñada bajo el método{' '}
             <span style={{ color: '#C5A55A', fontWeight: 700, textShadow: '0 0 16px rgba(197,165,90,0.5)' }}>SCADIQ.</span>
-            {' '}Selecciona para explorar.
           </motion.p>
         </motion.div>
 
-        {/* THREE CIRCLES — NEO first (biggest), MID second (medium), PRO third (smallest) */}
-        <div style={{ position: 'relative', marginBottom: 'clamp(1.5rem,3vw,2rem)' }}>
-          <svg viewBox="0 0 1100 120" style={{ position: 'absolute', top: '45%', left: 0, width: '100%', height: '120px', transform: 'translateY(-50%)', pointerEvents: 'none', zIndex: 0 }}>
-            <defs>
-              <linearGradient id="l1" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor={LEVELS[0].color} stopOpacity="0.4" />
-                <stop offset="100%" stopColor={LEVELS[1].color} stopOpacity="0.4" />
-              </linearGradient>
-              <linearGradient id="l2" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor={LEVELS[1].color} stopOpacity="0.4" />
-                <stop offset="100%" stopColor={LEVELS[2].color} stopOpacity="0.4" />
-              </linearGradient>
-              <filter id="glw"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-            </defs>
-            {visible && <>
-              <motion.line x1="280" y1="60" x2="520" y2="60" stroke="url(#l1)" strokeWidth="1.5" strokeDasharray="8 5" filter="url(#glw)"
-                initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 1 }} transition={{ duration: 1.1, delay: 0.7 }} />
-              <motion.line x1="580" y1="60" x2="790" y2="60" stroke="url(#l2)" strokeWidth="1.5" strokeDasharray="8 5" filter="url(#glw)"
-                initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 1 }} transition={{ duration: 1, delay: 0.9 }} />
-            </>}
-          </svg>
-
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            gap: 'clamp(4rem,8vw,10rem)',
-            padding: 'clamp(3rem,5vw,5rem) 0',
-            position: 'relative', zIndex: 1,
-          }}>
-            {LEVELS.map((l, i) => (
-              <motion.div key={l.id}
-                initial={{ opacity: 0, scale: 0.5, filter: 'blur(20px)' }}
-                animate={visible ? { opacity: 1, scale: 1, filter: 'blur(0px)' } : {}}
-                transition={{ duration: 0.8, delay: 0.2 + i * 0.15, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <CircleNode lvl={l} isActive={active === i} onClick={() => setActive(i)} visible={visible} />
-              </motion.div>
-            ))}
-          </div>
+        {/* SINGLE NEO CIRCLE — centered */}
+        <div style={{ display: 'flex', justifyContent: 'center', padding: 'clamp(3rem,5vw,5rem) 0', position: 'relative' }}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5, filter: 'blur(20px)' }}
+            animate={visible ? { opacity: 1, scale: 1, filter: 'blur(0px)' } : {}}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <CircleNode visible={visible} />
+          </motion.div>
         </div>
 
         {/* CONTENT — cinematic reveal */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={active}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 0.97, filter: 'blur(8px)' }}
-            transition={{ duration: 0.3 }}
-            style={{ paddingTop: 'clamp(1rem,2vw,1.5rem)' }}
-          >
-            <ContentReveal lvl={LEVELS[active]} />
-          </motion.div>
-        </AnimatePresence>
-
-        {/* LAYERS FOOTER */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={visible ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.7, delay: 0.8 }}
-          style={{ marginTop: 'clamp(3rem,5vw,5rem)', display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', border: '1px solid rgba(197,165,90,0.15)', borderRadius: 8, overflow: 'hidden' }}
+          initial={{ opacity: 0 }}
+          animate={visible ? { opacity: 1 } : {}}
+          transition={{ duration: 0.5, delay: 0.35 }}
+          style={{ paddingTop: 'clamp(1rem,2vw,1.5rem)' }}
+        >
+          <ContentReveal />
+        </motion.div>
+
+        {/* ECOSYSTEM LAYERS FOOTER */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={visible ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, delay: 0.8 }}
+          style={{
+            marginTop: 'clamp(3rem,5vw,5rem)',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3,1fr)',
+            border: '1px solid rgba(197,165,90,0.15)',
+            borderRadius: 8, overflow: 'hidden',
+          }}
         >
           {[
-            { num: '1', name: 'Bootcamp Vivencial', items: 'NEO · MID · PRO', color: '#C5A55A', rgb: '197,165,90' },
+            { num: '1', name: 'Bootcamp Vivencial', items: 'NEO — 2 Días Intensivos',   color: '#C5A55A', rgb: '197,165,90'  },
             { num: '2', name: 'Private Business Network', items: 'Pods · Eventos · Métricas', color: '#8AAFD4', rgb: '138,175,212' },
-            { num: '3', name: 'Opportunity Platform', items: 'Deals · Alianzas · Capital', color: '#D4BA7A', rgb: '212,186,122' },
+            { num: '3', name: 'Opportunity Platform',     items: 'Deals · Alianzas · Capital', color: '#D4BA7A', rgb: '212,186,122' },
           ].map((capa, i) => (
             <div key={i} style={{
               padding: 'clamp(1.2rem,2vw,1.7rem)',
-              background: i === 2 ? 'linear-gradient(135deg,rgba(212,186,122,0.07) 0%,rgba(4,10,20,0.98) 100%)' : 'rgba(4,10,20,0.98)',
+              background: i === 2
+                ? 'linear-gradient(135deg,rgba(212,186,122,0.07) 0%,rgba(4,10,20,0.98) 100%)'
+                : 'rgba(4,10,20,0.98)',
               borderRight: i < 2 ? '1px solid rgba(197,165,90,0.1)' : 'none',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '0.6rem' }}>
-                <span style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 900, fontSize: '0.58rem', letterSpacing: '0.3em', color: `rgba(${capa.rgb},0.5)`, textTransform: 'uppercase' }}>Capa {capa.num}</span>
+                <span style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 900, fontSize: '0.58rem', letterSpacing: '0.3em', color: `rgba(${capa.rgb},0.5)`, textTransform: 'uppercase' }}>
+                  Capa {capa.num}
+                </span>
                 <div style={{ flex: 1, height: 1, background: `linear-gradient(90deg,rgba(${capa.rgb},0.3),transparent)` }} />
               </div>
               <div style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 800, fontSize: 'clamp(0.85rem,1.3vw,1rem)', color: '#FFFFFF', marginBottom: 4 }}>{capa.name}</div>
