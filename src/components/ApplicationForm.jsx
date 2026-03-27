@@ -13,7 +13,7 @@ function Field({ label, name, type = 'text', placeholder, value, onChange, as = 
         fontFamily: "'Montserrat',sans-serif", fontWeight: 700,
         fontSize: '0.6rem', letterSpacing: '0.28em',
         textTransform: 'uppercase',
-        color: focused ? '#C5A55A' : 'rgba(197,165,90,0.45)',
+        color: focused ? '#E8CC88' : '#C5A55A',
         marginBottom: '8px',
         transition: 'color 0.25s',
       }}>
@@ -63,7 +63,7 @@ function EmailField({ value, onChange, emailStatus }) {
         display: 'flex', alignItems: 'center', gap: '8px',
         fontFamily: "'Montserrat',sans-serif", fontWeight: 700,
         fontSize: '0.6rem', letterSpacing: '0.28em', textTransform: 'uppercase',
-        color: focused ? '#C5A55A' : 'rgba(197,165,90,0.45)',
+        color: focused ? '#E8CC88' : '#C5A55A',
         marginBottom: '8px', transition: 'color 0.25s',
       }}>
         <span style={{ width: '16px', height: '1px', background: focused ? '#C5A55A' : 'rgba(197,165,90,0.3)', transition: 'background 0.25s' }} />
@@ -113,7 +113,7 @@ function PhoneField({ value, onChange }) {
         display: 'flex', alignItems: 'center', gap: '8px',
         fontFamily: "'Montserrat',sans-serif", fontWeight: 700,
         fontSize: '0.6rem', letterSpacing: '0.28em', textTransform: 'uppercase',
-        color: focused ? '#C5A55A' : 'rgba(197,165,90,0.45)',
+        color: focused ? '#E8CC88' : '#C5A55A',
         marginBottom: '8px', transition: 'color 0.25s',
       }}>
         <span style={{ width: '16px', height: '1px', background: focused ? '#C5A55A' : 'rgba(197,165,90,0.3)', transition: 'background 0.25s' }} />
@@ -481,7 +481,7 @@ export default function ApplicationForm() {
                     }}>Solicitud recibida.</h3>
                     <p style={{
                       fontFamily: "'Montserrat',sans-serif", fontWeight: 400,
-                      fontSize: '0.92rem', color: 'rgba(138,154,181,0.75)', lineHeight: 1.75,
+                      fontSize: '0.92rem', color: '#FFFFFF', lineHeight: 1.75,
                     }}>
                       Te respondemos con la misma seriedad con la que facilitamos el entrenamiento.
                     </p>
@@ -504,7 +504,7 @@ export default function ApplicationForm() {
                     }}>
                       <span style={{
                         fontFamily: "'Montserrat',sans-serif", fontSize: '0.58rem',
-                        letterSpacing: '0.25em', color: 'rgba(197,165,90,0.5)',
+                        letterSpacing: '0.25em', color: '#C5A55A',
                         textTransform: 'uppercase',
                       }}>Formulario de aplicación · ASCENT NEO</span>
                       <div style={{ display: 'flex', gap: '4px' }}>
@@ -582,7 +582,7 @@ export default function ApplicationForm() {
 
                     <p style={{
                       fontFamily: "'Montserrat',sans-serif", fontSize: '0.74rem',
-                      color: 'rgba(138,154,181,0.45)', textAlign: 'center', lineHeight: 1.65,
+                      color: '#FFFFFF', textAlign: 'center', lineHeight: 1.65,
                       margin: 0,
                     }}>
                       No todos los que asisten llegan igual.<br />
