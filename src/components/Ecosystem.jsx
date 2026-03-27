@@ -450,13 +450,15 @@ export default function Ecosystem() {
             <span style={{ color: '#C5A55A', fontWeight: 600 }}>Es un ecosistema empresarial completo.</span>
           </p>
 
-          <p style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 400, fontSize: 'clamp(0.88rem,1.2vw,0.97rem)', color: 'rgba(200,218,240,0.65)', margin: '0.9rem 0 0', lineHeight: 1.7, maxWidth: '560px', marginLeft: 'auto', marginRight: 'auto' }}>
-            Está compuesto por tres niveles de transformación empresarial:{' '}
+          <p style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 400, fontSize: 'clamp(0.88rem,1.2vw,0.97rem)', color: 'rgba(200,218,240,0.65)', margin: '0.9rem 0 0', lineHeight: 1.7, maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto' }}>
+            Está compuesto por tres niveles de transformación:{' '}
             <span style={{ color: '#C5A55A', fontWeight: 600 }}>NEO</span>,{' '}
             <span style={{ color: '#8AAFD4', fontWeight: 600 }}>MID</span>{' '}
             y{' '}
             <span style={{ color: '#D4BA7A', fontWeight: 600 }}>PRO</span>
-            {' '}— cada uno diseñado para una etapa específica del operador.
+            {' '}— cada uno opera sobre etapas específicas del método{' '}
+            <span style={{ color: '#C5A55A', fontWeight: 600, letterSpacing: '0.06em' }}>SCADIQ</span>
+            {' '}para llevar al operador de la claridad inicial hasta la escala real.
           </p>
         </motion.div>
 
