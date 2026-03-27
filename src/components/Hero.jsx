@@ -476,8 +476,8 @@ export default function Hero() {
                 }}>{stat.num}</div>
                 <div style={{
                   fontFamily: "'Montserrat',sans-serif", fontSize: '9.5px',
-                  letterSpacing: '0.18em', color: 'rgba(138,154,181,0.6)',
-                  textTransform: 'uppercase', marginTop: '4px',
+                  letterSpacing: '0.18em', color: '#FFFFFF',
+                  textTransform: 'uppercase', marginTop: '4px', fontWeight: 600,
                 }}>{stat.label}</div>
               </div>
               {i < 2 && <div style={{ width: '1px', height: '32px', background: 'linear-gradient(to bottom,transparent,rgba(197,165,90,0.25),transparent)', flexShrink: 0 }} />}
@@ -491,7 +491,7 @@ export default function Hero() {
           transition={{ opacity: { delay: 2.6, duration: 0.8 }, y: { delay: 2.6, duration: 2.2, repeat: Infinity, ease: 'easeInOut' } }}
           style={{ marginTop: 'clamp(0.8rem,3vw,2rem)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}
         >
-          <span style={{ fontFamily: "'Montserrat',sans-serif", fontSize: '8.5px', letterSpacing: '0.3em', color: 'rgba(197,165,90,0.25)', textTransform: 'uppercase' }}>scroll</span>
+          <span style={{ fontFamily: "'Montserrat',sans-serif", fontSize: '8.5px', letterSpacing: '0.3em', color: 'rgba(197,165,90,0.8)', textTransform: 'uppercase' }}>scroll</span>
           <div style={{ width: '1px', height: '32px', background: 'linear-gradient(to bottom,rgba(197,165,90,0.45),transparent)' }} />
         </motion.div>
 
