@@ -166,7 +166,7 @@ export default function FAQ() {
                   <span style={{
                     fontFamily: "'Montserrat',sans-serif", fontWeight: isActive ? 700 : 500,
                     fontSize: 'clamp(0.75rem,1.05vw,0.85rem)', lineHeight: 1.4,
-                    color: isActive ? '#FFFFFF' : 'rgba(255,255,255,0.38)',
+                    color: '#FFFFFF',
                     transition: 'color 0.3s, font-weight 0.2s',
                     position: 'relative', zIndex: 1,
                   }}>{faq.q}</span>
@@ -254,7 +254,7 @@ export default function FAQ() {
                   <p style={{
                     fontFamily: "'Montserrat',sans-serif", fontWeight: 400,
                     fontSize: 'clamp(0.88rem,1.25vw,0.97rem)', lineHeight: 1.85,
-                    color: 'rgba(148,165,192,0.85)', margin: 0,
+                    color: '#FFFFFF', margin: 0,
                   }}>{current.a}</p>
                 </div>
 
@@ -328,7 +328,7 @@ export default function FAQ() {
         >
           <p style={{
             fontFamily: "'Montserrat',sans-serif",
-            fontSize: 'clamp(0.85rem,1.2vw,0.92rem)', color: 'rgba(138,154,181,0.6)',
+            fontSize: 'clamp(0.85rem,1.2vw,0.92rem)', color: '#FFFFFF',
             marginBottom: '1.2rem', lineHeight: 1.6,
           }}>
             ¿Tienes preguntas que no están aquí?
