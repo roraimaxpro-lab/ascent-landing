@@ -340,6 +340,81 @@ function ContentReveal() {
   );
 }
 
+/* ── Neon traveling-light title ── */
+function NeonTitle() {
+  return (
+    <svg
+      viewBox="0 0 1000 130"
+      style={{ width: '100%', display: 'block', overflow: 'visible', maxWidth: '1100px', margin: '0 auto' }}
+      aria-label="ASCENT"
+    >
+      <defs>
+        {/* Sharp inner glow */}
+        <filter id="neonSharp" x="-5%" y="-40%" width="110%" height="180%">
+          <feGaussianBlur stdDeviation="2.5" result="b1" />
+          <feGaussianBlur stdDeviation="7"   result="b2" />
+          <feMerge>
+            <feMergeNode in="b2" />
+            <feMergeNode in="b1" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        {/* Wide diffused outer glow */}
+        <filter id="neonWide" x="-8%" y="-60%" width="116%" height="220%">
+          <feGaussianBlur stdDeviation="16" result="b" />
+          <feMerge>
+            <feMergeNode in="b" />
+            <feMergeNode in="b" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+
+      {/* ① Solid white fill — base */}
+      <text x="500" y="108" textAnchor="middle"
+        fontFamily="Montserrat, sans-serif" fontWeight="900" fontSize="110" letterSpacing="-5"
+        fill="#FFFFFF"
+      >ASCENT</text>
+
+      {/* ② Static gold outline — subtle constant halo */}
+      <text x="500" y="108" textAnchor="middle"
+        fontFamily="Montserrat, sans-serif" fontWeight="900" fontSize="110" letterSpacing="-5"
+        fill="none" stroke="rgba(197,165,90,0.22)" strokeWidth="1.5"
+      >ASCENT</text>
+
+      {/* ③ Wide golden diffused trail */}
+      <motion.text x="500" y="108" textAnchor="middle"
+        fontFamily="Montserrat, sans-serif" fontWeight="900" fontSize="110" letterSpacing="-5"
+        fill="none" stroke="#C5A55A" strokeWidth="7" strokeLinecap="round"
+        filter="url(#neonWide)"
+        style={{ strokeDasharray: '160 5840' }}
+        animate={{ strokeDashoffset: [3200, -3200] }}
+        transition={{ duration: 3.8, repeat: Infinity, ease: 'linear' }}
+      >ASCENT</motion.text>
+
+      {/* ④ Medium gold layer */}
+      <motion.text x="500" y="108" textAnchor="middle"
+        fontFamily="Montserrat, sans-serif" fontWeight="900" fontSize="110" letterSpacing="-5"
+        fill="none" stroke="#e8c97a" strokeWidth="3.5" strokeLinecap="round"
+        filter="url(#neonSharp)"
+        style={{ strokeDasharray: '120 5880' }}
+        animate={{ strokeDashoffset: [3200, -3200] }}
+        transition={{ duration: 3.8, repeat: Infinity, ease: 'linear' }}
+      >ASCENT</motion.text>
+
+      {/* ⑤ Bright white hot lead point */}
+      <motion.text x="500" y="108" textAnchor="middle"
+        fontFamily="Montserrat, sans-serif" fontWeight="900" fontSize="110" letterSpacing="-5"
+        fill="none" stroke="#fffbe8" strokeWidth="2" strokeLinecap="round"
+        filter="url(#neonSharp)"
+        style={{ strokeDasharray: '55 5945' }}
+        animate={{ strokeDashoffset: [3200, -3200] }}
+        transition={{ duration: 3.8, repeat: Infinity, ease: 'linear' }}
+      >ASCENT</motion.text>
+    </svg>
+  );
+}
+
 /* ── Main ── */
 export default function Ecosystem() {
   const ref = useRef(null);
@@ -407,9 +482,7 @@ export default function Ecosystem() {
           <div style={{ fontFamily: "'Playfair Display',serif", fontStyle: 'italic', fontSize: 'clamp(1.3rem,2.8vw,2rem)', color: '#C5A55A', marginBottom: '0.15rem', textShadow: '0 0 40px rgba(197,165,90,0.4)' }}>
             El Ecosistema
           </div>
-          <div style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 900, fontSize: 'clamp(3.5rem,10vw,8.5rem)', letterSpacing: '-0.045em', lineHeight: 0.87, color: '#FFFFFF' }}>
-            ASCENT
-          </div>
+          <NeonTitle />
           <motion.p
             initial={{ opacity: 0 }} animate={visible ? { opacity: 1 } : {}} transition={{ delay: 0.4 }}
             style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 400, fontSize: 'clamp(0.95rem,1.5vw,1.08rem)', lineHeight: 1.75, color: '#FFFFFF', margin: '1.6rem auto 0', maxWidth: '480px' }}
