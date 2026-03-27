@@ -23,49 +23,35 @@ function MountainCanvas() {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     let animId, t = 0;
+    let pathData = null;   // ← cached, rebuilt only on resize
+    let active = true;     // paused when tab hidden or off-screen
 
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    resize();
-    window.addEventListener('resize', resize);
+    const isMobile = window.innerWidth < 768;
+    const PARTICLE_COUNT = isMobile ? 18 : 80;
+    const LED_STEPS      = isMobile ? 28 : 60;
 
     const W = () => canvas.width;
     const H = () => canvas.height;
 
-    /* ── Mountain normalized path (0..1 coords) ─────────────── */
+    /* ── Mountain normalized path ─────────────────────────── */
     const PATH_NRM = [
-      [0,    1    ],
-      [0,    0.87 ],
-      [0.08, 0.80 ],
-      [0.18, 0.70 ],
-      [0.27, 0.63 ],
-      [0.35, 0.655],
-      [0.42, 0.60 ],
-      [0.50, 0.52 ],   // ← main peak
-      [0.58, 0.60 ],
-      [0.65, 0.655],
-      [0.73, 0.62 ],
-      [0.82, 0.70 ],
-      [0.92, 0.80 ],
-      [1.0,  0.87 ],
-      [1.0,  1    ],
+      [0,    1    ], [0,    0.87 ], [0.08, 0.80 ],
+      [0.18, 0.70 ], [0.27, 0.63 ], [0.35, 0.655],
+      [0.42, 0.60 ], [0.50, 0.52 ], [0.58, 0.60 ],
+      [0.65, 0.655], [0.73, 0.62 ], [0.82, 0.70 ],
+      [0.92, 0.80 ], [1.0,  0.87 ], [1.0,  1    ],
     ];
 
-    /* Pre-compute cumulative arc lengths (normalized) */
     function buildPath() {
       const pts = PATH_NRM.map(([nx, ny]) => [nx * W(), ny * H()]);
       const dists = [0];
       for (let i = 1; i < pts.length; i++) {
-        const dx = pts[i][0] - pts[i-1][0];
-        const dy = pts[i][1] - pts[i-1][1];
+        const dx = pts[i][0] - pts[i-1][0], dy = pts[i][1] - pts[i-1][1];
         dists.push(dists[i-1] + Math.sqrt(dx*dx + dy*dy));
       }
       return { pts, dists, total: dists[dists.length - 1] };
     }
 
-    /* Evaluate point at normalized arc length t ∈ [0,1] */
     function evalPath({ pts, dists, total }, t) {
       const target = t * total;
       for (let i = 1; i < dists.length; i++) {
@@ -80,9 +66,16 @@ function MountainCanvas() {
       return pts[pts.length - 1];
     }
 
+    const resize = () => {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+      pathData = buildPath(); // ← only rebuild here, not in draw
+    };
+    resize();
+    window.addEventListener('resize', resize);
 
     /* ── Particles ── */
-    const particles = Array.from({ length: 80 }, () => ({
+    const particles = Array.from({ length: PARTICLE_COUNT }, () => ({
       x: 0.28 + Math.random() * 0.44, y: 0.55 + Math.random() * 0.45,
       r: Math.random() * 1.3 + 0.2,
       a: Math.random() * 0.3 + 0.05,
@@ -91,17 +84,13 @@ function MountainCanvas() {
       ph: Math.random() * Math.PI * 2,
     }));
 
-    /* ── LED trace state ── */
-    // Progress goes 0→1 (left base → main peak → right base)
-    // We only want the ASCENDING leg (left bottom → peak ≈ t=0.46)
-    // Then reset and repeat
-    const PEAK_T  = 0.50;     // normalized arc position of the peak
-    const TRAIL   = 0.07;     // trail length in normalized arc
+    const PEAK_T  = 0.50;
+    const TRAIL   = 0.07;
     let ledT      = 0;
-    const LED_SPD = 0.0018;   // speed per frame
+    const LED_SPD = 0.0018;
 
-    /* ── Streaks ── */
-    const streaks = Array.from({ length: 3 }, () => ({
+    /* ── Streaks (desktop only) ── */
+    const streaks = isMobile ? [] : Array.from({ length: 3 }, () => ({
       y: 0.1 + Math.random() * 0.5, progress: -0.15,
       speed: 0.0005 + Math.random() * 0.0007,
       length: 0.1 + Math.random() * 0.12,
@@ -110,30 +99,33 @@ function MountainCanvas() {
     }));
 
     const draw = () => {
+      if (!active || !pathData) { animId = requestAnimationFrame(draw); return; }
+
       ctx.clearRect(0, 0, W(), H());
       t += 0.012;
 
-      const cx   = W() * 0.5;
+      const cx    = W() * 0.5;
       const peakY = H() * 0.52;
       const pulse = 0.5 + 0.5 * Math.sin(t * 0.55);
 
-      /* ── Background glow (sunrise behind peak) ── */
+      /* Background glow */
       const bg1 = ctx.createRadialGradient(cx, peakY, 0, cx, peakY, H() * 0.8);
-      bg1.addColorStop(0,   `rgba(197,165,90,${0.20 + pulse * 0.10})`);
-      bg1.addColorStop(0.22,`rgba(197,165,90,${0.07 + pulse * 0.04})`);
-      bg1.addColorStop(0.55,`rgba(197,165,90,0.015)`);
-      bg1.addColorStop(1,   'rgba(197,165,90,0)');
+      bg1.addColorStop(0,    `rgba(197,165,90,${0.20 + pulse * 0.10})`);
+      bg1.addColorStop(0.22, `rgba(197,165,90,${0.07 + pulse * 0.04})`);
+      bg1.addColorStop(0.55, `rgba(197,165,90,0.015)`);
+      bg1.addColorStop(1,    'rgba(197,165,90,0)');
       ctx.fillStyle = bg1; ctx.fillRect(0, 0, W(), H());
 
-      // Hot core
-      const bg2 = ctx.createRadialGradient(cx, peakY, 0, cx, peakY, H() * 0.22);
-      bg2.addColorStop(0,    `rgba(255,245,185,${0.38 + pulse * 0.18})`);
-      bg2.addColorStop(0.15, `rgba(240,210,130,${0.18 + pulse * 0.10})`);
-      bg2.addColorStop(1,    'rgba(197,165,90,0)');
-      ctx.fillStyle = bg2; ctx.fillRect(0, 0, W(), H());
+      /* Hot core (desktop only — expensive gradient) */
+      if (!isMobile) {
+        const bg2 = ctx.createRadialGradient(cx, peakY, 0, cx, peakY, H() * 0.22);
+        bg2.addColorStop(0,    `rgba(255,245,185,${0.38 + pulse * 0.18})`);
+        bg2.addColorStop(0.15, `rgba(240,210,130,${0.18 + pulse * 0.10})`);
+        bg2.addColorStop(1,    'rgba(197,165,90,0)');
+        ctx.fillStyle = bg2; ctx.fillRect(0, 0, W(), H());
+      }
 
-
-      /* ── Horizontal streaks ── */
+      /* Streaks */
       streaks.forEach(s => {
         if (!s.active) {
           s.timer--;
@@ -156,7 +148,7 @@ function MountainCanvas() {
         ctx.strokeStyle = sg; ctx.lineWidth = 1; ctx.stroke();
       });
 
-      /* ── Particles ── */
+      /* Particles */
       particles.forEach(p => {
         p.ph += 0.013; p.x += p.dx; p.y += p.dy;
         if (p.y < -0.02) { p.y = 0.55 + Math.random() * 0.45; p.x = 0.28 + Math.random() * 0.44; }
@@ -165,10 +157,7 @@ function MountainCanvas() {
         ctx.fillStyle = `rgba(212,186,122,${a})`; ctx.fill();
       });
 
-      /* ── Mountain silhouette ── */
-      const pathData = buildPath();
-
-      // Fill mountain
+      /* Mountain silhouette — uses cached pathData */
       const mpts = pathData.pts;
       ctx.beginPath();
       ctx.moveTo(mpts[0][0], mpts[0][1]);
@@ -177,31 +166,26 @@ function MountainCanvas() {
       ctx.fillStyle = 'rgba(4,8,14,0.97)';
       ctx.fill();
 
-      // Soft ridge glow
       ctx.beginPath();
       ctx.moveTo(mpts[0][0], mpts[0][1]);
       mpts.slice(1).forEach(([x, y]) => ctx.lineTo(x, y));
       ctx.strokeStyle = `rgba(197,165,90,${0.08 + pulse * 0.08})`;
       ctx.lineWidth = 1.5; ctx.stroke();
 
-      /* ── LED ASCENDING TRACE ─────────────────────────────── */
+      /* LED trace */
       ledT += LED_SPD;
-      if (ledT > PEAK_T + TRAIL) ledT = -TRAIL * 0.5; // reset from before start
+      if (ledT > PEAK_T + TRAIL) ledT = -TRAIL * 0.5;
 
-      // Draw trail (from ledT-TRAIL to ledT)
       const trailStart = Math.max(0, ledT - TRAIL);
       const trailEnd   = Math.min(PEAK_T, ledT);
 
       if (trailEnd > trailStart) {
-        const STEPS = 60;
-        for (let i = 0; i < STEPS; i++) {
-          const ta = trailStart + (trailEnd - trailStart) * (i / STEPS);
-          const tb = trailStart + (trailEnd - trailStart) * ((i + 1) / STEPS);
+        for (let i = 0; i < LED_STEPS; i++) {
+          const ta = trailStart + (trailEnd - trailStart) * (i / LED_STEPS);
+          const tb = trailStart + (trailEnd - trailStart) * ((i + 1) / LED_STEPS);
           if (ta < 0 || tb < 0) continue;
           const [x1, y1] = evalPath(pathData, ta);
           const [x2, y2] = evalPath(pathData, tb);
-
-          // Intensity: bright at head, fades to 0 at tail
           const intensity = (tb - trailStart) / (trailEnd - trailStart);
           const a = Math.pow(intensity, 1.8);
 
@@ -209,31 +193,28 @@ function MountainCanvas() {
           ctx.strokeStyle = `rgba(255,245,200,${a * 0.85})`;
           ctx.lineWidth = 2.5 * intensity + 0.5; ctx.lineCap = 'round'; ctx.stroke();
 
-          // Outer glow segment
           ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
           ctx.strokeStyle = `rgba(197,165,90,${a * 0.5})`;
           ctx.lineWidth = 8 * intensity; ctx.stroke();
         }
       }
 
-      // Draw glowing head dot
+      /* Glowing head */
       if (ledT >= 0 && ledT <= PEAK_T) {
         const [hx, hy] = evalPath(pathData, ledT);
-        // outer soft halo
         const halo = ctx.createRadialGradient(hx, hy, 0, hx, hy, 28);
-        halo.addColorStop(0,   `rgba(255,250,210,${0.55 + pulse * 0.2})`);
-        halo.addColorStop(0.35,`rgba(212,186,122,${0.2 + pulse * 0.1})`);
-        halo.addColorStop(1,   'rgba(197,165,90,0)');
+        halo.addColorStop(0,    `rgba(255,250,210,${0.55 + pulse * 0.2})`);
+        halo.addColorStop(0.35, `rgba(212,186,122,${0.2 + pulse * 0.1})`);
+        halo.addColorStop(1,    'rgba(197,165,90,0)');
         ctx.beginPath(); ctx.arc(hx, hy, 28, 0, Math.PI * 2);
         ctx.fillStyle = halo; ctx.fill();
-        // bright core
         ctx.beginPath(); ctx.arc(hx, hy, 3, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(255,255,235,${0.9 + pulse * 0.1})`; ctx.fill();
         ctx.beginPath(); ctx.arc(hx, hy, 1.2, 0, Math.PI * 2);
         ctx.fillStyle = '#FFFFFF'; ctx.fill();
       }
 
-      // Peak bright tip (always on)
+      /* Peak tip */
       const peakGlow = ctx.createRadialGradient(cx, peakY, 0, cx, peakY, 55);
       peakGlow.addColorStop(0,   `rgba(255,248,210,${0.45 + pulse * 0.25})`);
       peakGlow.addColorStop(0.3, `rgba(197,165,90,${0.12 + pulse * 0.08})`);
@@ -243,9 +224,32 @@ function MountainCanvas() {
 
       animId = requestAnimationFrame(draw);
     };
-    draw();
 
-    return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', resize); };
+    /* Pause when tab is hidden */
+    const onVisibility = () => {
+      active = !document.hidden;
+      if (active) animId = requestAnimationFrame(draw);
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+
+    /* Pause when hero scrolls off-screen */
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        active = entry.isIntersecting;
+        if (active) animId = requestAnimationFrame(draw);
+      },
+      { threshold: 0.01 }
+    );
+    observer.observe(canvas);
+
+    animId = requestAnimationFrame(draw);
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('resize', resize);
+      document.removeEventListener('visibilitychange', onVisibility);
+      observer.disconnect();
+    };
   }, []);
 
   return <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} />;

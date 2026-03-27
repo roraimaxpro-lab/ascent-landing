@@ -19,17 +19,14 @@ const NEO = {
 /* ── Circle node ── */
 function CircleNode({ visible }) {
   const lvl = NEO;
-  const sz = 300;
-  const rings = [
-    { r: 24, dur: 7,  dash: true,  ccw: false },
-    { r: 40, dur: 13, dash: false, ccw: true  },
-    { r: 58, dur: 22, dash: true,  ccw: false },
-  ];
-  const dotData = [
-    { r: 24, dur: 7,  sz: 7,   d: 0   },
-    { r: 40, dur: 13, sz: 4.5, d: 1.5 },
-    { r: 58, dur: 22, sz: 3,   d: 3   },
-  ];
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const sz = isMobile ? 220 : 300;
+  const rings = isMobile
+    ? [{ r: 18, dur: 8,  dash: true,  ccw: false }, { r: 32, dur: 15, dash: false, ccw: true }]
+    : [{ r: 24, dur: 7,  dash: true,  ccw: false }, { r: 40, dur: 13, dash: false, ccw: true  }, { r: 58, dur: 22, dash: true, ccw: false }];
+  const dotData = isMobile
+    ? [{ r: 18, dur: 8,  sz: 5,   d: 0 }]
+    : [{ r: 24, dur: 7,  sz: 7,   d: 0   }, { r: 40, dur: 13, sz: 4.5, d: 1.5 }, { r: 58, dur: 22, sz: 3, d: 3 }];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
@@ -67,7 +64,7 @@ function CircleNode({ visible }) {
             style={{
               position: 'absolute', inset: `-${r.r}px`, borderRadius: '50%',
               border: `1px ${r.dash ? 'dashed' : 'solid'} rgba(${lvl.rgb},${i === 0 ? 0.65 : i === 1 ? 0.35 : 0.18})`,
-              pointerEvents: 'none',
+              willChange: 'transform', pointerEvents: 'none',
             }}
           />
         ))}
@@ -77,7 +74,7 @@ function CircleNode({ visible }) {
           <motion.div key={i}
             animate={{ rotate: 360 }}
             transition={{ duration: d.dur, delay: d.d, repeat: Infinity, ease: 'linear' }}
-            style={{ position: 'absolute', inset: `-${d.r}px`, borderRadius: '50%', pointerEvents: 'none' }}
+            style={{ position: 'absolute', inset: `-${d.r}px`, borderRadius: '50%', willChange: 'transform', pointerEvents: 'none' }}
           >
             <div style={{
               position: 'absolute', top: '50%', left: 0,
@@ -90,7 +87,7 @@ function CircleNode({ visible }) {
 
         {/* Core circle */}
         <motion.div
-          animate={{
+          animate={isMobile ? {} : {
             boxShadow: [
               `0 0 0 2px rgba(${lvl.rgb},0.9), 0 0 30px rgba(${lvl.rgb},0.7), 0 0 80px rgba(${lvl.rgb},0.5), 0 0 160px rgba(${lvl.rgb},0.25)`,
               `0 0 0 2px rgba(${lvl.rgb},1), 0 0 50px rgba(${lvl.rgb},0.95), 0 0 120px rgba(${lvl.rgb},0.65), 0 0 240px rgba(${lvl.rgb},0.35)`,
@@ -102,6 +99,7 @@ function CircleNode({ visible }) {
             position: 'absolute', inset: 0, borderRadius: '50%',
             background: `radial-gradient(circle at 38% 32%, rgba(${lvl.rgb},0.3) 0%, #07101e 60%)`,
             border: `2.5px solid rgba(${lvl.rgb},0.95)`,
+            boxShadow: isMobile ? `0 0 0 2px rgba(${lvl.rgb},0.85), 0 0 30px rgba(${lvl.rgb},0.5), 0 0 70px rgba(${lvl.rgb},0.2)` : undefined,
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
             gap: 7,
           }}
@@ -109,7 +107,7 @@ function CircleNode({ visible }) {
           <span style={{
             display: 'inline-block',
             fontFamily: "'Montserrat',sans-serif", fontWeight: 900,
-            fontSize: '2.8rem', letterSpacing: '0.08em', lineHeight: 1,
+            fontSize: isMobile ? '2rem' : '2.8rem', letterSpacing: '0.08em', lineHeight: 1,
             background: `linear-gradient(140deg,#fff8e8 0%,${lvl.colorLight} 30%,${lvl.color} 70%)`,
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
             color: 'transparent',
