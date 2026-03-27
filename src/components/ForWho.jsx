@@ -244,9 +244,9 @@ export default function ForWho() {
               {/* Italic statement */}
               <div style={{ padding:'1.2rem 1.8rem 0.6rem',
                 borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
-                <p style={{ fontFamily:"'Playfair Display',serif", fontStyle:'italic',
+                <p style={{ fontFamily:"'Montserrat',sans-serif", fontStyle:'italic',
                   fontSize:'clamp(0.86rem,1.3vw,0.97rem)',
-                  color:'rgba(170,185,210,0.6)', lineHeight:1.65, margin:0 }}>
+                  color:'#FFFFFF', lineHeight:1.65, margin:0 }}>
                   No filtramos por nivel de ingreso ni por tamaño de empresa.
                   Filtramos por actitud.
                 </p>
