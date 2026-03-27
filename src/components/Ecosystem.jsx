@@ -4,47 +4,52 @@ import { motion, useInView } from 'framer-motion';
 const LEVELS = [
   {
     name: 'NEO',
+    step: '01',
     sub: 'Despertar',
     scadiq: 'S + C',
-    tagline: 'Entrada al ecosistema',
-    size: 1,
+    days: '2 días',
+    desc: 'Confronta tu realidad, aclara tu dirección y fortalece tu oferta, tu pitch y tus conexiones.',
     color: '#C5A55A',
     colorLight: '#f0d888',
     glow: 'rgba(197,165,90,0.5)',
     glowWide: 'rgba(197,165,90,0.18)',
     ring1: 'rgba(197,165,90,0.22)',
     ring2: 'rgba(197,165,90,0.08)',
-    days: '2 días',
+    primary: true,
   },
   {
     name: 'MID',
+    step: '02',
     sub: 'Construir',
     scadiq: 'A + D',
-    tagline: 'Expansión real',
-    size: 0.8,
+    days: '2 días',
+    desc: 'Convierte la claridad en estructura con decisiones más firmes, plan de 90 días, alianzas y accountability.',
     color: '#8AAFD4',
     colorLight: '#b8d4f0',
     glow: 'rgba(100,150,210,0.35)',
     glowWide: 'rgba(100,150,210,0.12)',
     ring1: 'rgba(100,150,210,0.15)',
     ring2: 'rgba(100,150,210,0.06)',
-    days: '2 días',
+    primary: false,
   },
   {
     name: 'PRO',
+    step: '03',
     sub: 'Escalar',
     scadiq: 'I + Q',
-    tagline: 'Dominio total',
-    size: 0.65,
+    days: '3 días',
+    desc: 'Pasa de operador a CEO con delegación, deals reales, pitch de alto nivel y expansión dentro del ecosistema.',
     color: '#D4BA7A',
     colorLight: '#f0dfa0',
     glow: 'rgba(212,186,122,0.3)',
     glowWide: 'rgba(212,186,122,0.1)',
     ring1: 'rgba(212,186,122,0.14)',
     ring2: 'rgba(212,186,122,0.05)',
-    days: '3 días',
+    primary: false,
   },
 ];
+
+/* ── Sub-components ── */
 
 function OrbitalRing({ radius, duration, color, opacity, dashes, ccw }) {
   return (
@@ -80,10 +85,7 @@ function OrbitDot({ radius, duration, delay, color, size = 5 }) {
     <motion.div
       animate={{ rotate: 360 }}
       transition={{ duration, delay, repeat: Infinity, ease: 'linear' }}
-      style={{
-        position: 'absolute', inset: `-${radius}px`,
-        borderRadius: '50%', pointerEvents: 'none',
-      }}
+      style={{ position: 'absolute', inset: `-${radius}px`, borderRadius: '50%', pointerEvents: 'none' }}
     >
       <div style={{
         position: 'absolute', top: '50%', left: 0,
@@ -96,49 +98,282 @@ function OrbitDot({ radius, duration, delay, color, size = 5 }) {
   );
 }
 
-/* Animated connector with flowing light */
-function FlowConnector({ visible, delay }) {
+/* ── Journey Progress Track ── */
+function JourneyTrack({ visible }) {
   return (
     <motion.div
-      initial={{ opacity: 0, scaleX: 0 }}
-      animate={visible ? { opacity: 1, scaleX: 1 } : {}}
-      transition={{ duration: 0.5, delay }}
-      style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0, position: 'relative' }}
+      initial={{ opacity: 0, y: 16 }}
+      animate={visible ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, delay: 0.35 }}
+      style={{
+        display: 'flex', alignItems: 'center',
+        maxWidth: '520px', margin: '0 auto',
+        marginBottom: 'clamp(2rem,4vw,3rem)',
+        position: 'relative',
+      }}
     >
-      <div style={{ position: 'relative', width: 'clamp(28px,4vw,52px)', height: '2px', overflow: 'hidden' }}>
-        <div style={{
-          position: 'absolute', inset: 0,
-          background: 'linear-gradient(90deg,rgba(197,165,90,0.2),rgba(197,165,90,0.6))',
-        }} />
-        {visible && (
-          <motion.div
-            animate={{ x: ['-100%', '200%'] }}
-            transition={{ duration: 1.4, repeat: Infinity, ease: 'linear', delay: delay + 0.3 }}
-            style={{
-              position: 'absolute', top: 0, left: 0,
-              width: '40%', height: '100%',
-              background: 'linear-gradient(90deg,transparent,rgba(197,165,90,1),transparent)',
-            }}
-          />
-        )}
-      </div>
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-        <motion.path
-          d="M1 7h12M7 1l6 6-6 6"
-          stroke="rgba(197,165,90,0.9)" strokeWidth="1.6"
-          strokeLinecap="round" strokeLinejoin="round"
-          initial={{ pathLength: 0 }} animate={visible ? { pathLength: 1 } : {}}
-          transition={{ duration: 0.4, delay: delay + 0.2 }}
-        />
-      </svg>
+      {[
+        { label: 'NEO', color: '#C5A55A', delay: 0.55 },
+        { label: 'MID', color: '#8AAFD4', delay: 0.75 },
+        { label: 'PRO', color: '#D4BA7A', delay: 0.95 },
+      ].map((node, i) => (
+        <div key={node.label} style={{ display: 'flex', alignItems: 'center', flex: i < 2 ? 1 : 'none' }}>
+
+          {/* Node */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '7px', flexShrink: 0 }}>
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={visible ? { scale: 1, opacity: 1 } : {}}
+              transition={{ delay: node.delay, duration: 0.45, type: 'spring', stiffness: 220 }}
+              style={{
+                width: '11px', height: '11px', borderRadius: '50%',
+                background: node.color,
+                boxShadow: `0 0 14px ${node.color}AA, 0 0 28px ${node.color}44`,
+              }}
+            />
+            <motion.span
+              initial={{ opacity: 0, y: 4 }}
+              animate={visible ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: node.delay + 0.12, duration: 0.35 }}
+              style={{
+                fontFamily: "'Montserrat',sans-serif", fontWeight: 800,
+                fontSize: '10px', letterSpacing: '0.24em',
+                color: node.color, textTransform: 'uppercase',
+              }}
+            >{node.label}</motion.span>
+          </div>
+
+          {/* Connecting line */}
+          {i < 2 && (
+            <div style={{ flex: 1, height: '1px', background: 'rgba(197,165,90,0.1)', position: 'relative', margin: '0 4px', marginBottom: '22px' }}>
+              {visible && (
+                <motion.div
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ duration: 0.8, delay: node.delay + 0.2, ease: [0.22, 1, 0.36, 1] }}
+                  style={{
+                    position: 'absolute', inset: 0,
+                    background: `linear-gradient(90deg,${node.color}88,rgba(197,165,90,0.25))`,
+                    transformOrigin: 'left',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <motion.div
+                    animate={{ x: ['-100%', '250%'] }}
+                    transition={{ duration: 1.8, repeat: Infinity, ease: 'linear', delay: node.delay + 1 }}
+                    style={{
+                      position: 'absolute', inset: 0, width: '35%',
+                      background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.5),transparent)',
+                    }}
+                  />
+                </motion.div>
+              )}
+            </div>
+          )}
+        </div>
+      ))}
     </motion.div>
   );
 }
 
+/* ── Level Card ── */
+function LevelCard({ lvl, i, visible }) {
+  const [hovered, setHovered] = useState(false);
+  const circlePx = [118, 94, 78][i];
+  const isMain = i === 0;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 48, filter: 'blur(10px)' }}
+      animate={visible ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+      transition={{ duration: 0.88, delay: 0.42 + i * 0.18, ease: [0.22, 1, 0.36, 1] }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        padding: 'clamp(1.8rem,2.8vw,2.5rem) clamp(1.2rem,2vw,1.8rem) clamp(1.4rem,2.2vw,2rem)',
+        background: hovered
+          ? isMain
+            ? 'linear-gradient(160deg,rgba(197,165,90,0.09) 0%,rgba(10,18,32,0.98) 100%)'
+            : `linear-gradient(160deg,${lvl.glowWide.replace('0.18','0.07').replace('0.12','0.06').replace('0.1','0.05')} 0%,rgba(10,18,32,0.98) 100%)`
+          : 'rgba(9,16,28,0.85)',
+        border: `1px solid ${hovered
+          ? isMain ? 'rgba(197,165,90,0.45)' : lvl.color + '44'
+          : isMain ? 'rgba(197,165,90,0.28)' : 'rgba(197,165,90,0.1)'}`,
+        borderRadius: '6px',
+        boxShadow: hovered
+          ? `0 28px 90px rgba(0,0,0,0.55), 0 0 70px ${lvl.glowWide}, inset 0 1px 0 ${lvl.color}20`
+          : isMain
+          ? '0 8px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(197,165,90,0.06)'
+          : '0 4px 20px rgba(0,0,0,0.3)',
+        transform: hovered ? 'translateY(-7px)' : 'translateY(0)',
+        transition: 'background 0.45s, border-color 0.45s, box-shadow 0.45s, transform 0.38s cubic-bezier(0.22,1,0.36,1)',
+        overflow: 'hidden',
+        cursor: 'default',
+      }}
+    >
+      {/* Top accent line */}
+      <div style={{
+        position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
+        background: hovered
+          ? `linear-gradient(90deg,transparent,${lvl.color},transparent)`
+          : isMain
+          ? `linear-gradient(90deg,transparent,${lvl.color}77,transparent)`
+          : 'transparent',
+        transition: 'background 0.45s',
+      }} />
+
+      {/* Step watermark */}
+      <div style={{
+        position: 'absolute', top: '12px', right: '16px',
+        fontFamily: "'Montserrat',sans-serif", fontWeight: 900,
+        fontSize: 'clamp(2.8rem,4vw,3.8rem)', lineHeight: 1,
+        color: 'transparent',
+        WebkitTextStroke: `1px ${lvl.color}${hovered ? '1A' : '0A'}`,
+        userSelect: 'none', pointerEvents: 'none',
+        transition: '-webkit-text-stroke 0.4s',
+      }}>{lvl.step}</div>
+
+      {/* ── Circle ── */}
+      <div style={{
+        position: 'relative',
+        width: `${circlePx}px`, height: `${circlePx}px`,
+        flexShrink: 0, marginBottom: '1.5rem',
+      }}>
+        {visible && <>
+          <PulseRing delay={i * 0.9} color={lvl.ring1} scale={isMain ? 1.85 : 1.65} />
+          <PulseRing delay={1.5 + i * 0.9} color={lvl.ring2} scale={isMain ? 1.5 : 1.38} />
+        </>}
+
+        <motion.div
+          animate={{ opacity: hovered ? [0.6, 1, 0.6] : [0.2, 0.45, 0.2] }}
+          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          style={{
+            position: 'absolute', inset: '-18px', borderRadius: '50%',
+            background: `radial-gradient(circle,${lvl.glowWide} 0%,transparent 70%)`,
+            filter: 'blur(12px)', pointerEvents: 'none',
+          }}
+        />
+
+        <OrbitalRing radius={isMain ? 15 : 11} duration={isMain ? 7 : 11} color={lvl.color} opacity={isMain ? 0.4 : 0.22} dashes />
+        <OrbitalRing radius={isMain ? 23 : 17} duration={isMain ? 13 : 17} color={lvl.ring1} opacity={0.6} ccw />
+
+        {visible && <>
+          <OrbitDot radius={isMain ? 15 : 11} duration={isMain ? 7 : 11} delay={i * 1.5} color={lvl.color} size={isMain ? 5 : 3.5} />
+          <OrbitDot radius={isMain ? 23 : 17} duration={isMain ? 13 : 17} delay={i * 0.8 + 0.5} color={lvl.colorLight} size={isMain ? 3 : 2} />
+        </>}
+
+        <div style={{
+          position: 'relative', zIndex: 1,
+          width: '100%', height: '100%', borderRadius: '50%',
+          background: isMain
+            ? 'radial-gradient(circle at 35% 30%,#223660 0%,#0f2040 45%,#071525 100%)'
+            : 'radial-gradient(circle at 35% 30%,#172535 0%,#0c1a2a 50%,#070f1a 100%)',
+          border: isMain ? `2px solid rgba(197,165,90,0.85)` : `1px solid ${lvl.color}55`,
+          boxShadow: isMain
+            ? `0 0 50px ${lvl.glow}, 0 0 100px ${lvl.glowWide}, inset 0 1px 0 rgba(197,165,90,0.15)`
+            : `0 0 25px ${lvl.glow}, inset 0 1px 0 rgba(255,255,255,0.04)`,
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center', gap: '3px',
+        }}>
+          <span style={{
+            fontFamily: "'Montserrat',sans-serif", fontWeight: 900,
+            fontSize: isMain ? '1.6rem' : '1.25rem',
+            letterSpacing: '0.06em',
+            background: `linear-gradient(140deg,${lvl.colorLight} 0%,${lvl.color} 60%)`,
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+            filter: `drop-shadow(0 0 12px ${lvl.glow})`,
+            lineHeight: 1,
+          }}>{lvl.name}</span>
+          <span style={{
+            fontFamily: "'Montserrat',sans-serif", fontWeight: 600,
+            fontSize: isMain ? '0.5rem' : '0.44rem',
+            color: `${lvl.color}88`, letterSpacing: '0.22em',
+          }}>{lvl.scadiq}</span>
+        </div>
+      </div>
+
+      {/* ── Content ── */}
+      <div style={{ textAlign: 'center', zIndex: 1, width: '100%' }}>
+
+        {/* Verb */}
+        <div style={{
+          fontFamily: "'Montserrat',sans-serif", fontWeight: 900,
+          fontSize: 'clamp(1.15rem,1.7vw,1.42rem)',
+          letterSpacing: '-0.025em',
+          color: hovered ? '#FFFFFF' : 'rgba(225,238,255,0.88)',
+          marginBottom: '0.55rem',
+          transition: 'color 0.35s',
+        }}>{lvl.sub}</div>
+
+        {/* Animated divider */}
+        <div style={{
+          width: hovered ? '75%' : '35%',
+          height: '1px',
+          background: `linear-gradient(90deg,transparent,${lvl.color}${hovered ? '99' : '44'},transparent)`,
+          margin: '0 auto 0.9rem',
+          transition: 'width 0.55s cubic-bezier(0.22,1,0.36,1), background 0.45s',
+        }} />
+
+        {/* Description */}
+        <p style={{
+          fontFamily: "'Montserrat',sans-serif", fontWeight: 400,
+          fontSize: 'clamp(0.78rem,1.05vw,0.86rem)',
+          lineHeight: 1.82,
+          color: hovered ? 'rgba(215,230,248,0.92)' : 'rgba(155,180,215,0.58)',
+          margin: '0 0 1.3rem',
+          transition: 'color 0.4s',
+        }}>{lvl.desc}</p>
+
+        {/* Meta badge */}
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: '8px',
+          padding: '5px 14px',
+          background: hovered ? `${lvl.color}15` : `${lvl.color}09`,
+          border: `1px solid ${lvl.color}${hovered ? '33' : '1A'}`,
+          borderRadius: '2px',
+          transition: 'background 0.4s, border-color 0.4s',
+        }}>
+          <span style={{
+            fontFamily: "'Montserrat',sans-serif", fontSize: '9px',
+            letterSpacing: '0.22em', color: `${lvl.color}CC`,
+            textTransform: 'uppercase', fontWeight: 700,
+          }}>{lvl.days}</span>
+          <div style={{
+            width: '3px', height: '3px', borderRadius: '50%',
+            background: `${lvl.color}55`,
+          }} />
+          <span style={{
+            fontFamily: "'Montserrat',sans-serif", fontSize: '9px',
+            letterSpacing: '0.22em', color: `${lvl.color}88`,
+            fontWeight: 700,
+          }}>{lvl.scadiq}</span>
+        </div>
+      </div>
+
+      {/* Bottom glow sweep on hover */}
+      <motion.div
+        animate={{ opacity: hovered ? 1 : 0 }}
+        transition={{ duration: 0.35 }}
+        style={{
+          position: 'absolute', bottom: 0, left: '15%', right: '15%', height: '1px',
+          background: `linear-gradient(90deg,transparent,${lvl.color}88,transparent)`,
+          pointerEvents: 'none',
+        }}
+      />
+    </motion.div>
+  );
+}
+
+/* ── Main Export ── */
 export default function Ecosystem() {
   const ref = useRef(null);
   const visible = useInView(ref, { once: true, amount: 0.06 });
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 640);
+
   useEffect(() => {
     const h = () => setIsMobile(window.innerWidth < 640);
     window.addEventListener('resize', h);
@@ -153,14 +388,14 @@ export default function Ecosystem() {
       padding: 'clamp(3rem,5vw,5rem) 1.5rem',
     }}>
 
-      {/* Grid */}
+      {/* Grid pattern */}
       <div style={{
         position: 'absolute', inset: 0, pointerEvents: 'none',
         backgroundImage: 'linear-gradient(rgba(197,165,90,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(197,165,90,0.015) 1px,transparent 1px)',
         backgroundSize: '72px 72px',
       }} />
 
-      {/* Wide ambient glow */}
+      {/* Ambient glow */}
       <div style={{
         position: 'absolute', top: '35%', left: '50%', transform: 'translateX(-50%)',
         width: '1100px', height: '600px',
@@ -221,23 +456,21 @@ export default function Ecosystem() {
           initial={{ opacity: 0, y: 16 }}
           animate={visible ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, delay: 0.28 }}
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0', marginBottom: '2.5rem' }}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0', marginBottom: '2rem' }}
         >
-          {/* Left line with glow */}
           <motion.div
             initial={{ scaleX: 0 }} animate={visible ? { scaleX: 1 } : {}}
             transition={{ duration: 0.7, delay: 0.4 }}
             style={{ flex: 1, height: '1px', transformOrigin: 'right', background: 'linear-gradient(90deg,transparent,rgba(197,165,90,0.5))' }}
           />
           <div style={{
-            padding: '12px 28px',
+            padding: '10px 24px',
             border: '1px solid rgba(197,165,90,0.6)',
             borderRadius: '2px',
             background: 'linear-gradient(135deg,rgba(197,165,90,0.15) 0%,rgba(197,165,90,0.05) 100%)',
             boxShadow: '0 0 30px rgba(197,165,90,0.15), inset 0 1px 0 rgba(197,165,90,0.12)',
             position: 'relative', overflow: 'hidden',
           }}>
-            {/* Shimmer sweep */}
             {visible && (
               <motion.div
                 animate={{ x: ['-120%', '200%'] }}
@@ -258,7 +491,6 @@ export default function Ecosystem() {
               Capa 1 — Bootcamp Vivencial
             </span>
           </div>
-          {/* Right line */}
           <motion.div
             initial={{ scaleX: 0 }} animate={visible ? { scaleX: 1 } : {}}
             transition={{ duration: 0.7, delay: 0.4 }}
@@ -266,145 +498,19 @@ export default function Ecosystem() {
           />
         </motion.div>
 
-        {/* ── CIRCLES ROW ── */}
+        {/* ── JOURNEY TRACK ── */}
+        {!isMobile && <JourneyTrack visible={visible} />}
+
+        {/* ── LEVEL CARDS ── */}
         <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          flexDirection: isMobile ? 'column' : 'row',
-          gap: isMobile ? '1.5rem' : 'clamp(1rem,4vw,3rem)',
-          marginBottom: 'clamp(3rem,6vw,5rem)',
-          position: 'relative',
+          display: 'grid',
+          gridTemplateColumns: isMobile ? '1fr' : 'repeat(3,1fr)',
+          gap: 'clamp(1rem,1.8vw,1.4rem)',
+          marginBottom: 'clamp(2.5rem,5vw,4rem)',
         }}>
-
-          {/* Glow backdrop behind circles */}
-          <div style={{
-            position: 'absolute', inset: '-40px',
-            background: 'radial-gradient(ellipse 70% 80% at 50% 50%,rgba(197,165,90,0.05) 0%,transparent 70%)',
-            pointerEvents: 'none',
-          }} />
-
-          {LEVELS.map((lvl, i) => {
-            const basePx = [220, 175, 145][i];
-            const sz = `clamp(${Math.round(basePx * 0.62)}px,${Math.round(basePx * 0.19)}vw,${basePx}px)`;
-            const isMain = i === 0;
-
-            return (
-              <div key={lvl.name} style={{ display: 'flex', alignItems: 'center', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '1rem' : 'clamp(0.8rem,2.5vw,2rem)' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px' }}>
-
-                  {/* Circle wrapper */}
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.55, y: 20 }}
-                    animate={visible ? { opacity: 1, scale: 1, y: 0 } : {}}
-                    transition={{ duration: 0.8, delay: 0.45 + i * 0.15, ease: [0.22, 1, 0.36, 1] }}
-                    style={{ position: 'relative', width: sz, height: sz, flexShrink: 0 }}
-                  >
-                    {/* Pulse rings */}
-                    {visible && <>
-                      <PulseRing delay={i * 0.9} color={lvl.ring1} scale={isMain ? 1.8 : 1.6} />
-                      <PulseRing delay={1.4 + i * 0.9} color={lvl.ring2} scale={isMain ? 1.5 : 1.4} />
-                    </>}
-
-                    {/* Outer glow halo (NEO only) */}
-                    {isMain && (
-                      <motion.div
-                        animate={{ opacity: [0.4, 0.8, 0.4] }}
-                        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                        style={{
-                          position: 'absolute', inset: '-20px', borderRadius: '50%',
-                          background: `radial-gradient(circle,${lvl.glowWide} 0%,transparent 70%)`,
-                          filter: 'blur(12px)', pointerEvents: 'none',
-                        }}
-                      />
-                    )}
-
-                    {/* Orbital rings */}
-                    <OrbitalRing radius={isMain ? 20 : 13} duration={isMain ? 7 : 11} color={lvl.color} opacity={isMain ? 0.4 : 0.22} dashes />
-                    <OrbitalRing radius={isMain ? 32 : 22} duration={isMain ? 13 : 17} color={lvl.ring1} opacity={0.6} ccw />
-
-                    {/* Orbit dots */}
-                    {visible && <>
-                      <OrbitDot radius={isMain ? 20 : 13} duration={isMain ? 7 : 11} delay={i * 1.5} color={lvl.color} size={isMain ? 6 : 4} />
-                      <OrbitDot radius={isMain ? 32 : 22} duration={isMain ? 13 : 17} delay={i * 0.8 + 0.5} color={lvl.colorLight} size={isMain ? 3.5 : 2.5} />
-                    </>}
-
-                    {/* Main circle */}
-                    <motion.div
-                      whileHover={{ scale: 1.04, boxShadow: `0 0 80px ${lvl.glow}, 0 0 140px ${lvl.glowWide}` }}
-                      style={{
-                        position: 'relative', zIndex: 1,
-                        width: '100%', height: '100%', borderRadius: '50%',
-                        background: isMain
-                          ? 'radial-gradient(circle at 35% 30%,#223660 0%,#0f2040 45%,#071525 100%)'
-                          : 'radial-gradient(circle at 35% 30%,#172535 0%,#0c1a2a 50%,#070f1a 100%)',
-                        border: isMain ? `2px solid rgba(197,165,90,0.85)` : `1px solid ${lvl.color}55`,
-                        boxShadow: isMain
-                          ? `0 0 60px ${lvl.glow}, 0 0 120px ${lvl.glowWide}, inset 0 1px 0 rgba(197,165,90,0.15), inset 0 -1px 0 rgba(197,165,90,0.05)`
-                          : `0 0 30px ${lvl.glow}, inset 0 1px 0 rgba(255,255,255,0.05)`,
-                        display: 'flex', flexDirection: 'column',
-                        alignItems: 'center', justifyContent: 'center',
-                        gap: '4px', cursor: 'default',
-                        transition: 'box-shadow 0.4s, transform 0.3s',
-                      }}
-                    >
-                      {/* Days badge — top */}
-                      <span style={{
-                        fontFamily: "'Montserrat',sans-serif", fontWeight: 600,
-                        fontSize: `clamp(${(0.48 * lvl.size).toFixed(2)}rem,${(0.65 * lvl.size).toFixed(1)}vw,${(0.62 * lvl.size).toFixed(2)}rem)`,
-                        color: `${lvl.color}99`, letterSpacing: '0.18em',
-                        textTransform: 'uppercase', marginBottom: '2px',
-                      }}>{lvl.days}</span>
-
-                      {/* Name */}
-                      <span style={{
-                        fontFamily: "'Montserrat',sans-serif", fontWeight: 900,
-                        fontSize: `clamp(${(1.7 * lvl.size).toFixed(1)}rem,${(3.8 * lvl.size).toFixed(1)}vw,${(2.8 * lvl.size).toFixed(1)}rem)`,
-                        letterSpacing: '0.06em',
-                        background: `linear-gradient(140deg,${lvl.colorLight} 0%,${lvl.color} 60%)`,
-                        WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-                        filter: `drop-shadow(0 0 14px ${lvl.glow})`,
-                        lineHeight: 1,
-                      }}>{lvl.name}</span>
-
-                      {/* Sub */}
-                      <span style={{
-                        fontFamily: "'Montserrat',sans-serif", fontWeight: 500,
-                        fontSize: `clamp(${(0.6 * lvl.size).toFixed(2)}rem,${(0.95 * lvl.size).toFixed(1)}vw,${(0.85 * lvl.size).toFixed(2)}rem)`,
-                        color: 'rgba(200,215,235,0.82)', letterSpacing: '0.03em',
-                      }}>{lvl.sub}</span>
-
-                      {/* SCADIQ */}
-                      <span style={{
-                        fontFamily: "'Montserrat',sans-serif", fontWeight: 700,
-                        fontSize: `clamp(${(0.48 * lvl.size).toFixed(2)}rem,${(0.65 * lvl.size).toFixed(1)}vw,${(0.62 * lvl.size).toFixed(2)}rem)`,
-                        color: `${lvl.color}70`, letterSpacing: '0.22em', marginTop: '3px',
-                      }}>{lvl.scadiq}</span>
-                    </motion.div>
-                  </motion.div>
-
-                  {/* Tagline below circle */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={visible ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.5, delay: 0.7 + i * 0.15 }}
-                    style={{ textAlign: 'center' }}
-                  >
-                    <span style={{
-                      fontFamily: "'Montserrat',sans-serif", fontWeight: 500,
-                      fontSize: 'clamp(0.7rem,1vw,0.82rem)',
-                      color: `${lvl.color}88`, letterSpacing: '0.06em',
-                    }}>{lvl.tagline}</span>
-                  </motion.div>
-                </div>
-
-                {/* Flow connector */}
-                {i < LEVELS.length - 1 && (
-                  <div style={isMobile ? { transform: 'rotate(90deg)' } : undefined}>
-                    <FlowConnector visible={visible} delay={0.7 + i * 0.15} />
-                  </div>
-                )}
-              </div>
-            );
-          })}
+          {LEVELS.map((lvl, i) => (
+            <LevelCard key={lvl.name} lvl={lvl} i={i} visible={visible} />
+          ))}
         </div>
 
         {/* ── CAPA 2 + CAPA 3 ── */}
