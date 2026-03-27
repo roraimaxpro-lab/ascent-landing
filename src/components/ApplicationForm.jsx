@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 
-function Field({ label, name, type = 'text', placeholder, value, onChange, as = 'input', rows }) {
+function Field({ label, name, type = 'text', placeholder, value, onChange, as = 'input', rows, required = true }) {
   const [focused, setFocused] = useState(false);
   const Tag = as;
   return (
@@ -25,7 +25,7 @@ function Field({ label, name, type = 'text', placeholder, value, onChange, as = 
       <Tag
         name={name}
         type={type}
-        required
+        required={required}
         placeholder={placeholder}
         value={value}
         onChange={onChange}
@@ -63,7 +63,7 @@ export default function ApplicationForm() {
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
   const [serverError, setServerError] = useState('');
-  const [form, setForm] = useState({ name: '', email: '', business: '', challenge: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', business: '', challenge: '' });
   const handle = e => setForm({ ...form, [e.target.name]: e.target.value });
 
   const submit = async (e) => {
@@ -392,6 +392,8 @@ export default function ApplicationForm() {
                       value={form.name} onChange={handle} />
                     <Field label="Correo electrónico" name="email" type="email" placeholder="tu@email.com"
                       value={form.email} onChange={handle} />
+                    <Field label="Teléfono (opcional)" name="phone" type="tel" placeholder="+1 (000) 000-0000"
+                      value={form.phone} onChange={handle} required={false} />
                     <Field label="¿A qué te dedicas?" name="business" placeholder="Sector / tipo de negocio / rol"
                       value={form.business} onChange={handle} />
                     <Field label="¿Cuál es tu mayor reto ahora mismo?" name="challenge" as="textarea"
