@@ -365,16 +365,17 @@ export default function ApplicationForm() {
                 }}>
                   <div style={{
                     fontFamily: "'Montserrat',sans-serif", fontWeight: 900,
-                    fontSize: 'clamp(1.4rem,2.8vw,2rem)', lineHeight: 1,
-                    background: 'linear-gradient(135deg,#e8cc88,#C5A55A)',
+                    fontSize: 'clamp(1.6rem,3vw,2.2rem)', lineHeight: 1,
+                    background: 'linear-gradient(135deg,#f0d888,#C5A55A)',
                     WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-                    marginBottom: '4px',
-                    textShadow: 'none',
+                    marginBottom: '6px',
+                    filter: 'drop-shadow(0 0 8px rgba(197,165,90,0.6))',
                   }}>{s.value}</div>
                   <div style={{
-                    fontFamily: "'Montserrat',sans-serif", fontSize: '0.58rem',
+                    fontFamily: "'Montserrat',sans-serif", fontSize: '0.62rem',
+                    fontWeight: 600,
                     letterSpacing: '0.18em', textTransform: 'uppercase',
-                    color: 'rgba(138,154,181,0.6)', lineHeight: 1.3,
+                    color: '#FFFFFF', lineHeight: 1.3,
                   }}>{s.label}</div>
                 </div>
               ))}
