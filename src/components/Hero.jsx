@@ -336,7 +336,7 @@ export default function Hero() {
           {/* Setup line — Playfair italic, muted */}
           <p style={{
             fontFamily: "'Playfair Display',serif", fontStyle: 'italic', fontWeight: 500,
-            fontSize: 'clamp(1rem,2vw,1.45rem)', color: 'rgba(220,215,205,0.55)',
+            fontSize: 'clamp(1rem,2vw,1.45rem)', color: '#FFFFFF',
             letterSpacing: '0.01em', lineHeight: 1.3, margin: '0 0 0.25rem 0',
           }}>
             ¿Cuántos eventos has asistido
