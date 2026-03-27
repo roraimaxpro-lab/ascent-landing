@@ -235,7 +235,7 @@ function Card({ block, index, visible }) {
       <p style={{
         fontFamily: "'Montserrat',sans-serif", fontWeight: 400,
         fontSize: 'clamp(0.78rem,1.05vw,0.85rem)', lineHeight: 1.85,
-        color: hovered ? 'rgba(148,165,192,0.92)' : 'rgba(138,154,181,0.42)',
+        color: '#FFFFFF',
         margin: 0,
         transition: 'color 0.45s',
         position: 'relative', zIndex: 1,
@@ -336,7 +336,7 @@ export default function Experience() {
             style={{
               fontFamily: "'Montserrat',sans-serif",
               fontSize: 'clamp(0.9rem,1.4vw,1rem)', lineHeight: 1.75,
-              color: 'rgba(138,154,181,0.68)', maxWidth: '460px', margin: '1rem auto 0',
+              color: '#FFFFFF', maxWidth: '460px', margin: '1rem auto 0',
             }}
           >
             No hay improvisación en ASCENT. Cada dinámica, cada espacio,
