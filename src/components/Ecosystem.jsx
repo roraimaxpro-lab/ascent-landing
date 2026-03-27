@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 
 const NEO = {
@@ -340,174 +340,6 @@ function ContentReveal() {
   );
 }
 
-/* ── ASCENT neon LED trace — canvas (same technique as Hero mountain) ── */
-function NeonTitle() {
-  const canvasRef = useRef(null);
-  const wrapRef   = useRef(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const wrap   = wrapRef.current;
-    const ctx    = canvas.getContext('2d');
-    let animId, t = 0, ledT = -0.04;
-    const TRAIL   = 0.09;
-    const LED_SPD = 0.0019;
-    let pathData  = null;
-
-    /* Build outline by scanning top/bottom edge pixels of rendered text */
-    const buildPath = () => {
-      const W = wrap.offsetWidth  || 800;
-      const H = wrap.offsetHeight || 160;
-      canvas.width  = W;
-      canvas.height = H;
-
-      const off  = document.createElement('canvas');
-      off.width  = W;
-      off.height = H;
-      const octx = off.getContext('2d');
-
-      const fontSize       = Math.min(W / 5.2, H * 0.78);
-      octx.font            = `900 ${fontSize}px Montserrat, sans-serif`;
-      octx.letterSpacing   = `${-0.045 * fontSize}px`;
-      octx.textAlign       = 'center';
-      octx.textBaseline    = 'middle';
-      octx.fillStyle       = 'white';
-      octx.fillText('ASCENT', W / 2, H / 2);
-
-      const { data } = octx.getImageData(0, 0, W, H);
-      const topEdge = [], botEdge = [];
-
-      for (let x = 0; x < W; x++) {
-        let ty = -1, by = -1;
-        for (let y = 0; y < H; y++) {
-          if (data[(y * W + x) * 4 + 3] > 90) {
-            if (ty === -1) ty = y;
-            by = y;
-          }
-        }
-        if (ty !== -1) { topEdge.push([x, ty]); botEdge.push([x, by]); }
-      }
-
-      /* full silhouette loop: top L→R then bottom R→L */
-      const pts   = [...topEdge, ...botEdge.reverse()];
-      const dists = [0];
-      for (let i = 1; i < pts.length; i++) {
-        const dx = pts[i][0] - pts[i-1][0], dy = pts[i][1] - pts[i-1][1];
-        dists.push(dists[i-1] + Math.sqrt(dx*dx + dy*dy));
-      }
-      pathData = { pts, dists, total: dists[dists.length - 1], W, H, fontSize };
-    };
-
-    /* Evaluate point at normalized arc length t ∈ [0,1] */
-    const evalPath = (tNorm) => {
-      const target = tNorm * pathData.total;
-      for (let i = 1; i < pathData.dists.length; i++) {
-        if (pathData.dists[i] >= target) {
-          const s = (target - pathData.dists[i-1]) / (pathData.dists[i] - pathData.dists[i-1]);
-          return [
-            pathData.pts[i-1][0] + s * (pathData.pts[i][0] - pathData.pts[i-1][0]),
-            pathData.pts[i-1][1] + s * (pathData.pts[i][1] - pathData.pts[i-1][1]),
-          ];
-        }
-      }
-      return pathData.pts[pathData.pts.length - 1];
-    };
-
-    const draw = () => {
-      if (!pathData) { animId = requestAnimationFrame(draw); return; }
-
-      const { W, H, fontSize } = pathData;
-      const pulse = 0.5 + 0.5 * Math.sin(t * 0.65);
-      t += 0.012;
-
-      ctx.clearRect(0, 0, W, H);
-
-      /* 1 — solid white text */
-      ctx.font          = `900 ${fontSize}px Montserrat, sans-serif`;
-      ctx.letterSpacing = `${-0.045 * fontSize}px`;
-      ctx.textAlign     = 'center';
-      ctx.textBaseline  = 'middle';
-      ctx.fillStyle     = '#FFFFFF';
-      ctx.fillText('ASCENT', W / 2, H / 2);
-
-      /* 2 — static subtle gold outline */
-      ctx.strokeStyle = 'rgba(197,165,90,0.22)';
-      ctx.lineWidth   = 1.5;
-      ctx.strokeText('ASCENT', W / 2, H / 2);
-
-      /* 3 — LED trace along silhouette */
-      ledT += LED_SPD;
-      if (ledT > 1 + TRAIL) ledT = -TRAIL * 0.4;
-
-      const tStart = Math.max(0, ledT - TRAIL);
-      const tEnd   = Math.min(1, ledT);
-
-      if (tEnd > tStart && ledT > 0) {
-        const STEPS = 80;
-        for (let i = 0; i < STEPS; i++) {
-          const ta = tStart + (tEnd - tStart) * (i / STEPS);
-          const tb = tStart + (tEnd - tStart) * ((i + 1) / STEPS);
-          if (ta < 0 || tb < 0) continue;
-          const [x1, y1] = evalPath(ta);
-          const [x2, y2] = evalPath(tb);
-          const intensity = (tb - tStart) / (tEnd - tStart);
-          const a = Math.pow(intensity, 1.8);
-
-          ctx.lineCap = 'round';
-
-          /* outer diffused gold glow */
-          ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
-          ctx.strokeStyle = `rgba(197,165,90,${a * 0.55})`;
-          ctx.lineWidth   = 10 * intensity;
-          ctx.stroke();
-
-          /* bright white-gold core */
-          ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
-          ctx.strokeStyle = `rgba(255,245,200,${a * 0.92})`;
-          ctx.lineWidth   = 2.5 * intensity + 0.5;
-          ctx.stroke();
-        }
-      }
-
-      /* 4 — glowing head dot */
-      if (ledT >= 0 && ledT <= 1) {
-        const [hx, hy] = evalPath(Math.min(ledT, 0.9999));
-
-        const halo = ctx.createRadialGradient(hx, hy, 0, hx, hy, 26);
-        halo.addColorStop(0,    `rgba(255,250,210,${0.60 + pulse * 0.25})`);
-        halo.addColorStop(0.35, `rgba(212,186,122,${0.22 + pulse * 0.12})`);
-        halo.addColorStop(1,    'rgba(197,165,90,0)');
-        ctx.beginPath(); ctx.arc(hx, hy, 26, 0, Math.PI * 2);
-        ctx.fillStyle = halo; ctx.fill();
-
-        /* bright core */
-        ctx.beginPath(); ctx.arc(hx, hy, 3.2, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,235,${0.9 + pulse * 0.1})`; ctx.fill();
-        ctx.beginPath(); ctx.arc(hx, hy, 1.4, 0, Math.PI * 2);
-        ctx.fillStyle = '#FFFFFF'; ctx.fill();
-      }
-
-      animId = requestAnimationFrame(draw);
-    };
-
-    const handleResize = () => { buildPath(); };
-    window.addEventListener('resize', handleResize);
-
-    document.fonts.ready.then(() => {
-      buildPath();
-      animId = requestAnimationFrame(draw);
-    });
-
-    return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', handleResize); };
-  }, []);
-
-  return (
-    <div ref={wrapRef} style={{ width: '100%', height: 'clamp(80px, 13vw, 175px)', position: 'relative' }}>
-      <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0 }} />
-    </div>
-  );
-}
-
 /* ── Main ── */
 export default function Ecosystem() {
   const ref = useRef(null);
@@ -575,7 +407,9 @@ export default function Ecosystem() {
           <div style={{ fontFamily: "'Playfair Display',serif", fontStyle: 'italic', fontSize: 'clamp(1.3rem,2.8vw,2rem)', color: '#C5A55A', marginBottom: '0.15rem', textShadow: '0 0 40px rgba(197,165,90,0.4)' }}>
             El Ecosistema
           </div>
-          <NeonTitle />
+          <div style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 900, fontSize: 'clamp(3.5rem,10vw,8.5rem)', letterSpacing: '-0.045em', lineHeight: 0.87, color: '#FFFFFF' }}>
+            ASCENT
+          </div>
           <motion.p
             initial={{ opacity: 0 }} animate={visible ? { opacity: 1 } : {}} transition={{ delay: 0.4 }}
             style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 400, fontSize: 'clamp(0.95rem,1.5vw,1.08rem)', lineHeight: 1.75, color: '#FFFFFF', margin: '1.6rem auto 0', maxWidth: '480px' }}
