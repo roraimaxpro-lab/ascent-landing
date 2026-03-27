@@ -7,42 +7,42 @@ const LEVELS = [
     color: '#C5A55A', colorLight: '#f8ebb0', rgb: '197,165,90',
     badge: 'PUERTA DE ENTRADA',
     headline: ['Claridad,', 'dirección', 'y activación real.'],
-    body: 'NEO es una experiencia completa en sí misma. Trabajas la realidad actual de tu negocio, aclaras tu dirección y fortaleces tu oferta, tu pitch y tus conexiones.',
+    body: 'En NEO aplicas la S y la C del método SCADIQ — las etapas de Scan y Comprehend. Aquí desarrollas la capacidad de leer tu negocio con más precisión, ganar claridad sobre lo que realmente importa y construir una base más sólida para decidir y actuar.',
     bullets: [
-      'Claridad sobre lo que hoy frena tu crecimiento.',
-      'Dirección más firme para tomar decisiones.',
-      'Fortalecimiento de oferta, pitch y relaciones estratégicas.',
-      'Activación real, no solo inspiración.',
+      'Scan: identificas con precisión lo que hoy frena tu crecimiento.',
+      'Comprehend: entiendes la raíz del problema, no solo los síntomas.',
+      'Dirección más firme y oferta más clara para el mercado.',
+      'Conexiones estratégicas reales desde el primer día.',
     ],
-    note: 'NEO es una experiencia completa. Las etapas posteriores existen para quienes decidan seguir creciendo dentro del ecosistema.',
+    note: 'NEO es una experiencia completa en sí misma. Las etapas siguientes existen para quienes, después de vivirla, decidan continuar el recorrido dentro del método.',
     size: 300,
   },
   {
     id: 'mid', name: 'MID', sub: 'Construir', scadiq: 'A + D', days: '2 días',
     color: '#8AAFD4', colorLight: '#c8dff5', rgb: '138,175,212',
     badge: 'SIGUIENTE ETAPA',
-    headline: ['Estructura,', 'decisiones', 'y crecimiento.'],
-    body: 'Convierte la claridad en estructura real. Plan de 90 días, alianzas estratégicas dentro del ecosistema y accountability que produce movimiento.',
+    headline: ['Estructura,', 'decisiones', 'y ejecución.'],
+    body: 'En MID aplicas la A y la D del método SCADIQ — las etapas de Analyze-Act y Decide. La claridad ganada en NEO se convierte en estructura, decisiones más firmes y un plan de ejecución con criterio real.',
     bullets: [
-      'Plan de 90 días con números reales.',
-      'Alianzas estratégicas dentro del ecosistema.',
-      'Accountability que genera movimiento.',
+      'Analyze-Act: conviertes análisis en movimiento concreto.',
+      'Decide: fortaleces tu capacidad de decidir bajo presión.',
+      'Plan de 90 días construido con números reales.',
     ],
-    note: 'Para quienes salieron de NEO y están listos para construir en serio.',
+    note: 'Para quienes salieron de NEO con claridad y están listos para construir con más orden.',
     size: 200,
   },
   {
     id: 'pro', name: 'PRO', sub: 'Escalar', scadiq: 'I + Q', days: '3 días',
     color: '#D4BA7A', colorLight: '#f2e4b0', rgb: '212,186,122',
     badge: 'NIVEL AVANZADO',
-    headline: ['Liderazgo,', 'expansión', 'y deals reales.'],
-    body: 'La transición de operador a CEO. Delegación real, deals dentro del ecosistema y expansión hacia oportunidades que antes no existían.',
+    headline: ['Liderazgo,', 'expansión', 'y visión de escala.'],
+    body: 'En PRO integras la I y la Q del método SCADIQ — las etapas de Implement y Quantum. Aquí el método se completa: lideras con mayor criterio, delegas con precisión y te mueves con visión dentro de un ecosistema que produce resultados reales.',
     bullets: [
-      'Transición real de operador a CEO.',
-      'Deal Room con oportunidades de negocio.',
-      'Expansión dentro del ecosistema ASCENT.',
+      'Implement: ejecutas con sistemas, no con esfuerzo constante.',
+      'Quantum: operas desde una visión de mayor escala e impacto.',
+      'Deal Room, expansión y oportunidades dentro del ecosistema.',
     ],
-    note: 'El nivel donde el ecosistema genera retorno real: conexiones, capital y movimiento.',
+    note: 'El nivel donde el método SCADIQ se completa y el ecosistema genera retorno real.',
     size: 150,
   },
 ];
@@ -139,6 +139,7 @@ function CircleNode({ lvl, isActive, onClick, visible, position }) {
           }}
         >
           <span style={{
+            display: 'inline-block',
             fontFamily: "'Montserrat',sans-serif", fontWeight: 900,
             fontSize: lvl.id === 'neo' ? '2.8rem' : lvl.id === 'mid' ? '1.8rem' : '1.4rem',
             letterSpacing: '0.08em', lineHeight: 1,
@@ -146,13 +147,17 @@ function CircleNode({ lvl, isActive, onClick, visible, position }) {
               ? `linear-gradient(140deg,#fff8e8 0%,${lvl.colorLight} 30%,${lvl.color} 70%)`
               : `linear-gradient(140deg,${lvl.colorLight},${lvl.color})`,
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+            color: 'transparent',
             filter: isActive ? `drop-shadow(0 0 24px rgba(${lvl.rgb},1))` : 'none',
             transition: 'filter 0.45s',
           }}>{lvl.name}</span>
           <span style={{
-            fontFamily: "'Montserrat',sans-serif", fontWeight: 600,
-            fontSize: lvl.id === 'neo' ? '0.52rem' : '0.42rem', letterSpacing: '0.28em',
-            color: `rgba(${lvl.rgb},${isActive ? 0.9 : 0.3})`, transition: 'color 0.45s',
+            fontFamily: "'Montserrat',sans-serif", fontWeight: 700,
+            fontSize: lvl.id === 'neo' ? '0.78rem' : lvl.id === 'mid' ? '0.68rem' : '0.6rem',
+            letterSpacing: '0.22em',
+            color: `rgba(${lvl.rgb},${isActive ? 1 : 0.45})`,
+            textShadow: isActive ? `0 0 14px rgba(${lvl.rgb},0.8)` : 'none',
+            transition: 'color 0.45s, text-shadow 0.45s',
           }}>{lvl.scadiq}</span>
         </motion.div>
       </div>
