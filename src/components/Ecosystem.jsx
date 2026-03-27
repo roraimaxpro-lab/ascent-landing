@@ -320,9 +320,9 @@ function LevelCard({ lvl, i, visible }) {
 
         {/* Description */}
         <p style={{
-          fontFamily: "'Montserrat',sans-serif", fontWeight: 400,
-          fontSize: 'clamp(0.78rem,1.05vw,0.86rem)',
-          lineHeight: 1.82,
+          fontFamily: "'Montserrat',sans-serif", fontWeight: 500,
+          fontSize: 'clamp(0.92rem,1.3vw,1rem)',
+          lineHeight: 1.8,
           color: '#FFFFFF',
           margin: '0 0 1.3rem',
           transition: 'color 0.4s',
