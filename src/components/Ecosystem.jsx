@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 
 const NEO = {
@@ -340,78 +340,171 @@ function ContentReveal() {
   );
 }
 
-/* ── Neon traveling-light title ── */
+/* ── ASCENT neon LED trace — canvas (same technique as Hero mountain) ── */
 function NeonTitle() {
+  const canvasRef = useRef(null);
+  const wrapRef   = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const wrap   = wrapRef.current;
+    const ctx    = canvas.getContext('2d');
+    let animId, t = 0, ledT = -0.04;
+    const TRAIL   = 0.09;
+    const LED_SPD = 0.0019;
+    let pathData  = null;
+
+    /* Build outline by scanning top/bottom edge pixels of rendered text */
+    const buildPath = () => {
+      const W = wrap.offsetWidth  || 800;
+      const H = wrap.offsetHeight || 160;
+      canvas.width  = W;
+      canvas.height = H;
+
+      const off  = document.createElement('canvas');
+      off.width  = W;
+      off.height = H;
+      const octx = off.getContext('2d');
+
+      const fontSize       = Math.min(W / 5.2, H * 0.78);
+      octx.font            = `900 ${fontSize}px Montserrat, sans-serif`;
+      octx.letterSpacing   = `${-0.045 * fontSize}px`;
+      octx.textAlign       = 'center';
+      octx.textBaseline    = 'middle';
+      octx.fillStyle       = 'white';
+      octx.fillText('ASCENT', W / 2, H / 2);
+
+      const { data } = octx.getImageData(0, 0, W, H);
+      const topEdge = [], botEdge = [];
+
+      for (let x = 0; x < W; x++) {
+        let ty = -1, by = -1;
+        for (let y = 0; y < H; y++) {
+          if (data[(y * W + x) * 4 + 3] > 90) {
+            if (ty === -1) ty = y;
+            by = y;
+          }
+        }
+        if (ty !== -1) { topEdge.push([x, ty]); botEdge.push([x, by]); }
+      }
+
+      /* full silhouette loop: top L→R then bottom R→L */
+      const pts   = [...topEdge, ...botEdge.reverse()];
+      const dists = [0];
+      for (let i = 1; i < pts.length; i++) {
+        const dx = pts[i][0] - pts[i-1][0], dy = pts[i][1] - pts[i-1][1];
+        dists.push(dists[i-1] + Math.sqrt(dx*dx + dy*dy));
+      }
+      pathData = { pts, dists, total: dists[dists.length - 1], W, H, fontSize };
+    };
+
+    /* Evaluate point at normalized arc length t ∈ [0,1] */
+    const evalPath = (tNorm) => {
+      const target = tNorm * pathData.total;
+      for (let i = 1; i < pathData.dists.length; i++) {
+        if (pathData.dists[i] >= target) {
+          const s = (target - pathData.dists[i-1]) / (pathData.dists[i] - pathData.dists[i-1]);
+          return [
+            pathData.pts[i-1][0] + s * (pathData.pts[i][0] - pathData.pts[i-1][0]),
+            pathData.pts[i-1][1] + s * (pathData.pts[i][1] - pathData.pts[i-1][1]),
+          ];
+        }
+      }
+      return pathData.pts[pathData.pts.length - 1];
+    };
+
+    const draw = () => {
+      if (!pathData) { animId = requestAnimationFrame(draw); return; }
+
+      const { W, H, fontSize } = pathData;
+      const pulse = 0.5 + 0.5 * Math.sin(t * 0.65);
+      t += 0.012;
+
+      ctx.clearRect(0, 0, W, H);
+
+      /* 1 — solid white text */
+      ctx.font          = `900 ${fontSize}px Montserrat, sans-serif`;
+      ctx.letterSpacing = `${-0.045 * fontSize}px`;
+      ctx.textAlign     = 'center';
+      ctx.textBaseline  = 'middle';
+      ctx.fillStyle     = '#FFFFFF';
+      ctx.fillText('ASCENT', W / 2, H / 2);
+
+      /* 2 — static subtle gold outline */
+      ctx.strokeStyle = 'rgba(197,165,90,0.22)';
+      ctx.lineWidth   = 1.5;
+      ctx.strokeText('ASCENT', W / 2, H / 2);
+
+      /* 3 — LED trace along silhouette */
+      ledT += LED_SPD;
+      if (ledT > 1 + TRAIL) ledT = -TRAIL * 0.4;
+
+      const tStart = Math.max(0, ledT - TRAIL);
+      const tEnd   = Math.min(1, ledT);
+
+      if (tEnd > tStart && ledT > 0) {
+        const STEPS = 80;
+        for (let i = 0; i < STEPS; i++) {
+          const ta = tStart + (tEnd - tStart) * (i / STEPS);
+          const tb = tStart + (tEnd - tStart) * ((i + 1) / STEPS);
+          if (ta < 0 || tb < 0) continue;
+          const [x1, y1] = evalPath(ta);
+          const [x2, y2] = evalPath(tb);
+          const intensity = (tb - tStart) / (tEnd - tStart);
+          const a = Math.pow(intensity, 1.8);
+
+          ctx.lineCap = 'round';
+
+          /* outer diffused gold glow */
+          ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+          ctx.strokeStyle = `rgba(197,165,90,${a * 0.55})`;
+          ctx.lineWidth   = 10 * intensity;
+          ctx.stroke();
+
+          /* bright white-gold core */
+          ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+          ctx.strokeStyle = `rgba(255,245,200,${a * 0.92})`;
+          ctx.lineWidth   = 2.5 * intensity + 0.5;
+          ctx.stroke();
+        }
+      }
+
+      /* 4 — glowing head dot */
+      if (ledT >= 0 && ledT <= 1) {
+        const [hx, hy] = evalPath(Math.min(ledT, 0.9999));
+
+        const halo = ctx.createRadialGradient(hx, hy, 0, hx, hy, 26);
+        halo.addColorStop(0,    `rgba(255,250,210,${0.60 + pulse * 0.25})`);
+        halo.addColorStop(0.35, `rgba(212,186,122,${0.22 + pulse * 0.12})`);
+        halo.addColorStop(1,    'rgba(197,165,90,0)');
+        ctx.beginPath(); ctx.arc(hx, hy, 26, 0, Math.PI * 2);
+        ctx.fillStyle = halo; ctx.fill();
+
+        /* bright core */
+        ctx.beginPath(); ctx.arc(hx, hy, 3.2, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,235,${0.9 + pulse * 0.1})`; ctx.fill();
+        ctx.beginPath(); ctx.arc(hx, hy, 1.4, 0, Math.PI * 2);
+        ctx.fillStyle = '#FFFFFF'; ctx.fill();
+      }
+
+      animId = requestAnimationFrame(draw);
+    };
+
+    const handleResize = () => { buildPath(); };
+    window.addEventListener('resize', handleResize);
+
+    document.fonts.ready.then(() => {
+      buildPath();
+      animId = requestAnimationFrame(draw);
+    });
+
+    return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', handleResize); };
+  }, []);
+
   return (
-    <svg
-      viewBox="0 0 1000 130"
-      style={{ width: '100%', display: 'block', overflow: 'visible', maxWidth: '1100px', margin: '0 auto' }}
-      aria-label="ASCENT"
-    >
-      <defs>
-        {/* Sharp inner glow */}
-        <filter id="neonSharp" x="-5%" y="-40%" width="110%" height="180%">
-          <feGaussianBlur stdDeviation="2.5" result="b1" />
-          <feGaussianBlur stdDeviation="7"   result="b2" />
-          <feMerge>
-            <feMergeNode in="b2" />
-            <feMergeNode in="b1" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-        {/* Wide diffused outer glow */}
-        <filter id="neonWide" x="-8%" y="-60%" width="116%" height="220%">
-          <feGaussianBlur stdDeviation="16" result="b" />
-          <feMerge>
-            <feMergeNode in="b" />
-            <feMergeNode in="b" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
-
-      {/* ① Solid white fill — base */}
-      <text x="500" y="108" textAnchor="middle"
-        fontFamily="Montserrat, sans-serif" fontWeight="900" fontSize="110" letterSpacing="-5"
-        fill="#FFFFFF"
-      >ASCENT</text>
-
-      {/* ② Static gold outline — subtle constant halo */}
-      <text x="500" y="108" textAnchor="middle"
-        fontFamily="Montserrat, sans-serif" fontWeight="900" fontSize="110" letterSpacing="-5"
-        fill="none" stroke="rgba(197,165,90,0.22)" strokeWidth="1.5"
-      >ASCENT</text>
-
-      {/* ③ Wide golden diffused trail */}
-      <motion.text x="500" y="108" textAnchor="middle"
-        fontFamily="Montserrat, sans-serif" fontWeight="900" fontSize="110" letterSpacing="-5"
-        fill="none" stroke="#C5A55A" strokeWidth="7" strokeLinecap="round"
-        filter="url(#neonWide)"
-        style={{ strokeDasharray: '160 5840' }}
-        animate={{ strokeDashoffset: [3200, -3200] }}
-        transition={{ duration: 3.8, repeat: Infinity, ease: 'linear' }}
-      >ASCENT</motion.text>
-
-      {/* ④ Medium gold layer */}
-      <motion.text x="500" y="108" textAnchor="middle"
-        fontFamily="Montserrat, sans-serif" fontWeight="900" fontSize="110" letterSpacing="-5"
-        fill="none" stroke="#e8c97a" strokeWidth="3.5" strokeLinecap="round"
-        filter="url(#neonSharp)"
-        style={{ strokeDasharray: '120 5880' }}
-        animate={{ strokeDashoffset: [3200, -3200] }}
-        transition={{ duration: 3.8, repeat: Infinity, ease: 'linear' }}
-      >ASCENT</motion.text>
-
-      {/* ⑤ Bright white hot lead point */}
-      <motion.text x="500" y="108" textAnchor="middle"
-        fontFamily="Montserrat, sans-serif" fontWeight="900" fontSize="110" letterSpacing="-5"
-        fill="none" stroke="#fffbe8" strokeWidth="2" strokeLinecap="round"
-        filter="url(#neonSharp)"
-        style={{ strokeDasharray: '55 5945' }}
-        animate={{ strokeDashoffset: [3200, -3200] }}
-        transition={{ duration: 3.8, repeat: Infinity, ease: 'linear' }}
-      >ASCENT</motion.text>
-    </svg>
+    <div ref={wrapRef} style={{ width: '100%', height: 'clamp(80px, 13vw, 175px)', position: 'relative' }}>
+      <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0 }} />
+    </div>
   );
 }
 
