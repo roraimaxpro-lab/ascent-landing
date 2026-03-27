@@ -323,7 +323,7 @@ function LevelCard({ lvl, i, visible }) {
           fontFamily: "'Montserrat',sans-serif", fontWeight: 400,
           fontSize: 'clamp(0.78rem,1.05vw,0.86rem)',
           lineHeight: 1.82,
-          color: hovered ? 'rgba(215,230,248,0.92)' : 'rgba(155,180,215,0.58)',
+          color: '#FFFFFF',
           margin: '0 0 1.3rem',
           transition: 'color 0.4s',
         }}>{lvl.desc}</p>
