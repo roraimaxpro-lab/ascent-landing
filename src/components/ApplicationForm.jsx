@@ -606,6 +606,14 @@ export default function ApplicationForm() {
       <style>{`
         @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
 
+        #aplicar input::placeholder,
+        #aplicar textarea::placeholder {
+          color: rgba(255,255,255,0.55) !important;
+        }
+        .ascent-phone .react-international-phone-input::placeholder {
+          color: rgba(255,255,255,0.55) !important;
+        }
+
         .ascent-phone .react-international-phone-country-selector-button {
           background: transparent !important;
           border: none !important;
