@@ -1,5 +1,7 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
+import { PhoneInput } from 'react-international-phone';
+import 'react-international-phone/style.css';
 
 function Field({ label, name, type = 'text', placeholder, value, onChange, as = 'input', rows, required = true }) {
   const [focused, setFocused] = useState(false);
@@ -51,6 +53,104 @@ function Field({ label, name, type = 'text', placeholder, value, onChange, as = 
   );
 }
 
+/* ── Email Field with validation ── */
+function EmailField({ value, onChange, emailStatus }) {
+  const [focused, setFocused] = useState(false);
+  const statusColor = emailStatus === 'valid' ? '#4ade80' : emailStatus === 'invalid' ? '#f87171' : 'transparent';
+  return (
+    <div>
+      <label style={{
+        display: 'flex', alignItems: 'center', gap: '8px',
+        fontFamily: "'Montserrat',sans-serif", fontWeight: 700,
+        fontSize: '0.6rem', letterSpacing: '0.28em', textTransform: 'uppercase',
+        color: focused ? '#C5A55A' : 'rgba(197,165,90,0.45)',
+        marginBottom: '8px', transition: 'color 0.25s',
+      }}>
+        <span style={{ width: '16px', height: '1px', background: focused ? '#C5A55A' : 'rgba(197,165,90,0.3)', transition: 'background 0.25s' }} />
+        Correo electrónico
+      </label>
+      <div style={{ position: 'relative' }}>
+        <input
+          name="email" type="email" required
+          placeholder="tu@email.com"
+          value={value} onChange={onChange}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          style={{
+            width: '100%', boxSizing: 'border-box',
+            background: focused ? 'rgba(197,165,90,0.04)' : 'rgba(11,22,36,0.8)',
+            border: `1px solid ${emailStatus === 'invalid' ? 'rgba(248,113,113,0.5)' : focused ? 'rgba(197,165,90,0.55)' : 'rgba(197,165,90,0.12)'}`,
+            borderRadius: '3px', padding: '13px 40px 13px 16px',
+            fontFamily: "'Montserrat',sans-serif", fontSize: '0.88rem', color: '#FFFFFF',
+            outline: 'none', transition: 'border-color 0.25s, background 0.25s, box-shadow 0.25s',
+            boxShadow: focused ? '0 0 20px rgba(197,165,90,0.1), inset 0 1px 0 rgba(197,165,90,0.06)' : 'none',
+          }}
+        />
+        {emailStatus && emailStatus !== 'checking' && (
+          <div style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', color: statusColor, fontSize: '16px', lineHeight: 1 }}>
+            {emailStatus === 'valid' ? '✓' : '✗'}
+          </div>
+        )}
+        {emailStatus === 'checking' && (
+          <div style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', width: '14px', height: '14px', border: '2px solid rgba(197,165,90,0.3)', borderTopColor: '#C5A55A', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }} />
+        )}
+      </div>
+      {emailStatus === 'invalid' && (
+        <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: '0.7rem', color: '#f87171', marginTop: '6px' }}>
+          Este correo no parece válido. Verifica el dominio.
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Phone Field with country code picker ── */
+function PhoneField({ value, onChange }) {
+  const [focused, setFocused] = useState(false);
+  return (
+    <div>
+      <label style={{
+        display: 'flex', alignItems: 'center', gap: '8px',
+        fontFamily: "'Montserrat',sans-serif", fontWeight: 700,
+        fontSize: '0.6rem', letterSpacing: '0.28em', textTransform: 'uppercase',
+        color: focused ? '#C5A55A' : 'rgba(197,165,90,0.45)',
+        marginBottom: '8px', transition: 'color 0.25s',
+      }}>
+        <span style={{ width: '16px', height: '1px', background: focused ? '#C5A55A' : 'rgba(197,165,90,0.3)', transition: 'background 0.25s' }} />
+        Teléfono (opcional)
+      </label>
+      <PhoneInput
+        defaultCountry="us"
+        value={value}
+        onChange={onChange}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        className="ascent-phone"
+        inputStyle={{
+          width: '100%', boxSizing: 'border-box',
+          background: focused ? 'rgba(197,165,90,0.04)' : 'rgba(11,22,36,0.8)',
+          border: 'none',
+          fontFamily: "'Montserrat',sans-serif", fontSize: '0.88rem', color: '#FFFFFF',
+          outline: 'none', height: 'auto', padding: '13px 16px',
+        }}
+        countrySelectorStyleProps={{
+          buttonStyle: {
+            background: 'transparent', border: 'none',
+            padding: '0 8px 0 12px', height: '100%',
+          },
+        }}
+        style={{
+          background: focused ? 'rgba(197,165,90,0.04)' : 'rgba(11,22,36,0.8)',
+          border: `1px solid ${focused ? 'rgba(197,165,90,0.55)' : 'rgba(197,165,90,0.12)'}`,
+          borderRadius: '3px',
+          transition: 'border-color 0.25s, background 0.25s, box-shadow 0.25s',
+          boxShadow: focused ? '0 0 20px rgba(197,165,90,0.1), inset 0 1px 0 rgba(197,165,90,0.06)' : 'none',
+        }}
+      />
+    </div>
+  );
+}
+
 const stats = [
   { value: '2', label: 'Días presenciales' },
   { value: '7', label: 'Entregables concretos' },
@@ -64,7 +164,35 @@ export default function ApplicationForm() {
   const [sending, setSending] = useState(false);
   const [serverError, setServerError] = useState('');
   const [form, setForm] = useState({ name: '', email: '', phone: '', business: '', challenge: '' });
+  const [emailStatus, setEmailStatus] = useState(''); // '' | 'checking' | 'valid' | 'invalid'
+  const emailTimer = useRef(null);
   const handle = e => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleEmailChange = useCallback((e) => {
+    const val = e.target.value;
+    setForm(f => ({ ...f, email: val }));
+    setEmailStatus('');
+    clearTimeout(emailTimer.current);
+    if (!val || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return;
+    emailTimer.current = setTimeout(async () => {
+      setEmailStatus('checking');
+      try {
+        const res = await fetch('/api/validate-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: val }),
+        });
+        const data = await res.json();
+        setEmailStatus(data.valid ? 'valid' : 'invalid');
+      } catch {
+        setEmailStatus('');
+      }
+    }, 800);
+  }, []);
+
+  const handlePhoneChange = useCallback((phone) => {
+    setForm(f => ({ ...f, phone }));
+  }, []);
 
   const submit = async (e) => {
     e.preventDefault();
@@ -390,10 +518,8 @@ export default function ApplicationForm() {
 
                     <Field label="Nombre completo" name="name" placeholder="Tu nombre"
                       value={form.name} onChange={handle} />
-                    <Field label="Correo electrónico" name="email" type="email" placeholder="tu@email.com"
-                      value={form.email} onChange={handle} />
-                    <Field label="Teléfono (opcional)" name="phone" type="tel" placeholder="+1 (000) 000-0000"
-                      value={form.phone} onChange={handle} required={false} />
+                    <EmailField value={form.email} onChange={handleEmailChange} emailStatus={emailStatus} />
+                    <PhoneField value={form.phone} onChange={handlePhoneChange} />
                     <Field label="¿A qué te dedicas?" name="business" placeholder="Sector / tipo de negocio / rol"
                       value={form.business} onChange={handle} />
                     <Field label="¿Cuál es tu mayor reto ahora mismo?" name="challenge" as="textarea"
@@ -477,6 +603,51 @@ export default function ApplicationForm() {
       }} />
 
       <style>{`
+        @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
+
+        .ascent-phone .react-international-phone-country-selector-button {
+          background: transparent !important;
+          border: none !important;
+          border-right: 1px solid rgba(197,165,90,0.15) !important;
+          padding: 0 10px !important;
+          margin: 0 !important;
+          height: 100% !important;
+        }
+        .ascent-phone .react-international-phone-country-selector-button:hover {
+          background: rgba(197,165,90,0.08) !important;
+        }
+        .ascent-phone .react-international-phone-country-selector-dropdown {
+          background: #132238 !important;
+          border: 1px solid rgba(197,165,90,0.25) !important;
+          color: #FFFFFF !important;
+          z-index: 100 !important;
+        }
+        .ascent-phone .react-international-phone-country-selector-dropdown__list-item {
+          color: #FFFFFF !important;
+          padding: 8px 12px !important;
+        }
+        .ascent-phone .react-international-phone-country-selector-dropdown__list-item:hover {
+          background: rgba(197,165,90,0.12) !important;
+        }
+        .ascent-phone .react-international-phone-country-selector-dropdown__list-item--focused {
+          background: rgba(197,165,90,0.15) !important;
+        }
+        .ascent-phone .react-international-phone-input {
+          background: transparent !important;
+          border: none !important;
+          color: #FFFFFF !important;
+          font-family: 'Montserrat', sans-serif !important;
+          font-size: 0.88rem !important;
+        }
+        .ascent-phone .react-international-phone-input::placeholder {
+          color: rgba(138,154,181,0.4) !important;
+        }
+        .ascent-phone .react-international-phone-country-selector-dropdown__search {
+          background: #0B1624 !important;
+          border: 1px solid rgba(197,165,90,0.2) !important;
+          color: #FFFFFF !important;
+        }
+
         @media (max-width: 860px) {
           #aplicar .apply-layout {
             display: flex !important;
