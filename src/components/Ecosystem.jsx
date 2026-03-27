@@ -559,7 +559,7 @@ export default function Ecosystem() {
                   <div style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 800, fontSize: 'clamp(1rem,1.8vw,1.25rem)', color: '#FFFFFF', letterSpacing: '-0.01em' }}>{capa.title}</div>
                 </div>
               </div>
-              <div style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 400, fontSize: 'clamp(0.82rem,1.1vw,0.9rem)', lineHeight: 1.75, color: capa.gold ? 'rgba(220,200,150,0.72)' : 'rgba(175,192,215,0.65)', whiteSpace: 'pre-line' }}>
+              <div style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 400, fontSize: 'clamp(0.82rem,1.1vw,0.9rem)', lineHeight: 1.75, color: '#FFFFFF', whiteSpace: 'pre-line' }}>
                 {capa.body}
               </div>
             </motion.div>

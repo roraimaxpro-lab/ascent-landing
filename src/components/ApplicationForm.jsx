@@ -341,7 +341,7 @@ export default function ApplicationForm() {
               style={{
                 fontFamily: "'Montserrat',sans-serif", fontWeight: 400,
                 fontSize: 'clamp(0.9rem,1.3vw,0.97rem)', lineHeight: 1.8,
-                color: 'rgba(138,154,181,0.7)', marginBottom: '2.8rem', maxWidth: '420px',
+                color: '#FFFFFF', marginBottom: '2.8rem', maxWidth: '420px',
               }}
             >
               Elige en qué lado quedarte. No hay forma de saber exactamente lo que vives dentro hasta que estás en la sala. Los lugares son limitados, no porque sea una táctica de marketing, sino porque el nivel de la sala depende del nivel de las personas que la ocupan.
@@ -410,7 +410,7 @@ export default function ApplicationForm() {
                 }}>Sala en llenado activo</div>
                 <div style={{
                   fontFamily: "'Montserrat',sans-serif", fontWeight: 400,
-                  fontSize: 'clamp(0.78rem,1.05vw,0.83rem)', color: 'rgba(138,154,181,0.65)', lineHeight: 1.6,
+                  fontSize: 'clamp(0.78rem,1.05vw,0.83rem)', color: '#FFFFFF', lineHeight: 1.6,
                 }}>Las plazas disponibles se confirman por orden de solicitud. El proceso de selección comienza con el formulario.</div>
               </div>
             </motion.div>

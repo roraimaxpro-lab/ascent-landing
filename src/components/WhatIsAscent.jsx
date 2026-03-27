@@ -238,7 +238,7 @@ function ScadiqTimeline({ visible }) {
             <p style={{
               fontFamily:"'Montserrat',sans-serif", fontWeight:400,
               fontSize:'clamp(0.88rem,1.35vw,1rem)', lineHeight:1.8,
-              color:'rgba(210,222,240,0.78)', margin:'0 0 1.4rem',
+              color:'#FFFFFF', margin:'0 0 1.4rem',
               maxWidth:'640px',
             }}>{item.detail}</p>
 
@@ -482,9 +482,10 @@ export default function WhatIsAscent() {
 
           {/* Intro label */}
           <motion.p initial={{ opacity:0, y:10 }} animate={visible?{opacity:1,y:0}:{}} transition={{duration:0.6,delay:1.1}}
-            style={{ fontFamily:"'Playfair Display',serif", fontStyle:'italic', fontWeight:400,
-              fontSize:'clamp(0.95rem,1.5vw,1.15rem)', color:'rgba(197,165,90,0.65)',
-              marginBottom:'1.6rem', letterSpacing:'0.02em' }}>
+            style={{ fontFamily:"'Playfair Display',serif", fontStyle:'italic', fontWeight:600,
+              fontSize:'clamp(1rem,1.6vw,1.2rem)', color:'#D4BA7A',
+              marginBottom:'1.6rem', letterSpacing:'0.02em',
+              textShadow:'0 0 20px rgba(197,165,90,0.6), 0 0 40px rgba(197,165,90,0.3)' }}>
             La pregunta que nadie se atreve a hacerse:
           </motion.p>
 
