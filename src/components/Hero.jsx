@@ -385,9 +385,9 @@ export default function Hero() {
 
         {/* Subheadline */}
         <motion.p variants={fadeUp} style={{
-          fontFamily: "'Montserrat',sans-serif", fontWeight: 400,
-          fontSize: 'clamp(0.9rem,1.4vw,1.05rem)', lineHeight: 1.8,
-          color: 'rgba(215,210,200,0.7)', maxWidth: '540px', margin: '2.8rem auto 1.4rem',
+          fontFamily: "'Montserrat',sans-serif", fontWeight: 500,
+          fontSize: 'clamp(1rem,1.5vw,1.15rem)', lineHeight: 1.8,
+          color: '#FFFFFF', maxWidth: '540px', margin: '2.8rem auto 1.4rem',
         }}>
           ASCENT es un entrenamiento vivencial de negocios y liderazgo para fundadores, líderes
           y emprendedores que tienen algo serio en mente, y quieren avanzar con{' '}
