@@ -29,11 +29,11 @@ app.post('/api/contact', async (req, res) => {
     day: 'numeric', month: 'long', year: 'numeric',
   });
 
-  const phoneRow = phone ? `
-    <tr>
-      <td style="padding:14px 20px;border-bottom:1px solid rgba(197,165,90,0.1);color:#8A9AB5;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;">TELÉFONO</td>
-      <td style="padding:14px 20px;border-bottom:1px solid rgba(197,165,90,0.1);color:#FFFFFF;font-size:14px;text-align:right;">${phone}</td>
-    </tr>` : '';
+  const phoneBlock = phone ? `
+    <div style="padding:14px 20px;border-bottom:1px solid rgba(197,165,90,0.1);">
+      <div style="color:#8A9AB5;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:6px;">TELÉFONO</div>
+      <div style="color:#FFFFFF;font-size:15px;">${phone}</div>
+    </div>` : '';
 
   try {
     const { data, error } = await resend.emails.send({
@@ -56,7 +56,7 @@ app.post('/api/contact', async (req, res) => {
           </div>
 
           <!-- Body -->
-          <div style="background:#0B1624;padding:0 40px 40px;">
+          <div style="background:#0B1624;padding:0 20px 40px;">
 
             <!-- Badge -->
             <div style="text-align:center;margin-bottom:24px;">
@@ -73,27 +73,23 @@ app.post('/api/contact', async (req, res) => {
 
             <!-- Details card -->
             <div style="background:#132238;border:1px solid rgba(197,165,90,0.15);border-radius:8px;overflow:hidden;margin-bottom:28px;">
-              <table style="width:100%;border-collapse:collapse;">
-                <tr>
-                  <td style="padding:14px 20px;border-bottom:1px solid rgba(197,165,90,0.1);color:#8A9AB5;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;">NOMBRE</td>
-                  <td style="padding:14px 20px;border-bottom:1px solid rgba(197,165,90,0.1);color:#FFFFFF;font-size:14px;text-align:right;font-weight:600;">${name}</td>
-                </tr>
-                <tr>
-                  <td style="padding:14px 20px;border-bottom:1px solid rgba(197,165,90,0.1);color:#8A9AB5;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;">CORREO</td>
-                  <td style="padding:14px 20px;border-bottom:1px solid rgba(197,165,90,0.1);color:#C5A55A;font-size:14px;text-align:right;">
-                    <a href="mailto:${email}" style="color:#C5A55A;text-decoration:none;">${email}</a>
-                  </td>
-                </tr>
-                ${phoneRow}
-                <tr>
-                  <td style="padding:14px 20px;border-bottom:1px solid rgba(197,165,90,0.1);color:#8A9AB5;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;">DEDICACIÓN</td>
-                  <td style="padding:14px 20px;border-bottom:1px solid rgba(197,165,90,0.1);color:#FFFFFF;font-size:14px;text-align:right;">${business}</td>
-                </tr>
-                <tr>
-                  <td style="padding:14px 20px;color:#8A9AB5;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;vertical-align:top;">RETO PRINCIPAL</td>
-                  <td style="padding:14px 20px;color:#FFFFFF;font-size:14px;text-align:right;line-height:1.6;">${challenge}</td>
-                </tr>
-              </table>
+              <div style="padding:14px 20px;border-bottom:1px solid rgba(197,165,90,0.1);">
+                <div style="color:#8A9AB5;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:6px;">NOMBRE</div>
+                <div style="color:#FFFFFF;font-size:15px;font-weight:600;">${name}</div>
+              </div>
+              <div style="padding:14px 20px;border-bottom:1px solid rgba(197,165,90,0.1);">
+                <div style="color:#8A9AB5;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:6px;">CORREO</div>
+                <div style="font-size:15px;word-break:break-all;"><a href="mailto:${email}" style="color:#C5A55A;text-decoration:none;">${email}</a></div>
+              </div>
+              ${phoneBlock}
+              <div style="padding:14px 20px;border-bottom:1px solid rgba(197,165,90,0.1);">
+                <div style="color:#8A9AB5;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:6px;">DEDICACIÓN</div>
+                <div style="color:#FFFFFF;font-size:15px;">${business}</div>
+              </div>
+              <div style="padding:14px 20px;">
+                <div style="color:#8A9AB5;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:6px;">RETO PRINCIPAL</div>
+                <div style="color:#FFFFFF;font-size:15px;line-height:1.6;">${challenge}</div>
+              </div>
             </div>
 
             <!-- CTA -->
