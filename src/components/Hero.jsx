@@ -87,7 +87,7 @@ function MountainCanvas() {
     const PEAK_T  = 0.50;
     const TRAIL   = 0.07;
     let ledT      = 0;
-    const LED_SPD = 0.0018;
+    const LED_SPD = 0.0008;
 
     /* ── Streaks (desktop only) ── */
     const streaks = isMobile ? [] : Array.from({ length: 3 }, () => ({
@@ -418,7 +418,16 @@ export default function Hero() {
 
         {/* CTAs */}
         <motion.div variants={fadeUp} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', marginBottom: '2.6rem' }}>
-          <motion.a href="#aplicar" whileHover={{ scale: 1.025 }} whileTap={{ scale: 0.975 }}
+          <motion.a
+            href="#aplicar"
+            onClick={e => {
+              if (window.innerWidth < 860) {
+                e.preventDefault();
+                const el = document.getElementById('formulario');
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }}
+            whileHover={{ scale: 1.025 }} whileTap={{ scale: 0.975 }}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: '12px',
               fontFamily: "'Montserrat',sans-serif", fontWeight: 800,

@@ -516,7 +516,9 @@ export default function WhatIsAscent() {
           </motion.p>
 
           {/* CTA */}
-          <motion.a href="#aplicar" whileHover={{ scale:1.04 }} whileTap={{ scale:0.97 }}
+          <motion.a href="#aplicar"
+            onClick={e => { if (window.innerWidth < 860) { e.preventDefault(); const el = document.getElementById('formulario'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }}
+            whileHover={{ scale:1.04 }} whileTap={{ scale:0.97 }}
             style={{ display:'inline-flex', alignItems:'center', gap:'10px',
               fontFamily:"'Montserrat',sans-serif", fontWeight:700,
               fontSize:'11px', letterSpacing:'0.2em', textTransform:'uppercase',

@@ -9,6 +9,11 @@ const navLinks = [
 ];
 
 function scrollTo(id) {
+  // On mobile, if targeting the form section, scroll to the form card directly
+  if (id === 'aplicar' && window.innerWidth < 860) {
+    const formEl = document.getElementById('formulario');
+    if (formEl) { formEl.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+  }
   const el = document.getElementById(id);
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }

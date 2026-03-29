@@ -427,6 +427,7 @@ export default function Experience() {
               </p>
               <motion.a
                 href="#aplicar"
+                onClick={e => { if (window.innerWidth < 860) { e.preventDefault(); const el = document.getElementById('formulario'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }}
                 whileHover={{ scale: 1.03, boxShadow: '0 0 60px rgba(197,165,90,0.85), 0 8px 30px rgba(0,0,0,0.5)' }}
                 whileTap={{ scale: 0.97 }}
                 style={{

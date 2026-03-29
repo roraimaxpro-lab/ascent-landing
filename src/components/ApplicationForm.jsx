@@ -194,11 +194,32 @@ export default function ApplicationForm() {
     setForm(f => ({ ...f, phone }));
   }, []);
 
+  const convexSiteUrl = import.meta.env.VITE_CONVEX_SITE_URL;
+
   const submit = async (e) => {
     e.preventDefault();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      setServerError('Ingresa un correo electrónico válido (ej: tu@email.com)');
+      return;
+    }
     setSending(true);
     setServerError('');
     try {
+      // Save to Convex database (if configured)
+      if (convexSiteUrl) {
+        try {
+          await fetch(`${convexSiteUrl}/submit-application`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...form, phone: form.phone && form.phone.replace(/[\s+\-()]/g, '').length > 4 ? form.phone : '' }),
+          });
+        } catch {
+          // Convex save failed silently — email still sends
+        }
+      }
+
+      // Send email notification
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -420,6 +441,7 @@ export default function ApplicationForm() {
 
           {/* ── RIGHT: Form ── */}
           <motion.div
+            id="formulario"
             className="apply-form-card"
             initial={{ opacity: 0, y: 40, scale: 0.97 }}
             animate={visible ? { opacity: 1, y: 0, scale: 1 } : {}}
@@ -605,6 +627,7 @@ export default function ApplicationForm() {
 
       <style>{`
         @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
+        #formulario { scroll-margin-top: 80px; }
 
         #aplicar input::placeholder,
         #aplicar textarea::placeholder {
@@ -669,6 +692,7 @@ export default function ApplicationForm() {
           }
           #aplicar .apply-form-card {
             position: relative !important;
+            scroll-margin-top: 80px;
           }
         }
       `}</style>

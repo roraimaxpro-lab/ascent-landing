@@ -20,56 +20,73 @@ const NEO = {
 function CircleNode({ visible }) {
   const lvl = NEO;
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-  const sz = isMobile ? 220 : 300;
+  const sz = isMobile ? 200 : 300;
   const rings = isMobile
-    ? [{ r: 18, dur: 8,  dash: true,  ccw: false }, { r: 32, dur: 15, dash: false, ccw: true }]
-    : [{ r: 24, dur: 7,  dash: true,  ccw: false }, { r: 40, dur: 13, dash: false, ccw: true  }, { r: 58, dur: 22, dash: true, ccw: false }];
+    ? [{ r: 18, dur: 10, dash: true, ccw: false }, { r: 30, dur: 18, dash: false, ccw: true }]
+    : [{ r: 24, dur: 7,  dash: true, ccw: false }, { r: 40, dur: 13, dash: false, ccw: true  }, { r: 58, dur: 22, dash: true, ccw: false }];
   const dotData = isMobile
-    ? [{ r: 18, dur: 8,  sz: 5,   d: 0 }]
-    : [{ r: 24, dur: 7,  sz: 7,   d: 0   }, { r: 40, dur: 13, sz: 4.5, d: 1.5 }, { r: 58, dur: 22, sz: 3, d: 3 }];
+    ? []
+    : [{ r: 24, dur: 7, sz: 7, d: 0 }, { r: 40, dur: 13, sz: 4.5, d: 1.5 }, { r: 58, dur: 22, sz: 3, d: 3 }];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
       <div style={{ position: 'relative', width: sz, height: sz, flexShrink: 0 }}>
 
-        {/* Active burst pulses */}
-        {[0, 0.7, 1.4, 2.1].map((delay, i) => (
+        {/* Active burst pulses — desktop only, contained within outer ring */}
+        {!isMobile && [0, 0.7, 1.4].map((delay, i) => (
           <motion.div key={i}
-            initial={{ scale: 1, opacity: 0.7 }}
-            animate={{ scale: 2.5 + i * 0.2, opacity: 0 }}
+            initial={{ scale: 1, opacity: 0.5 }}
+            animate={{ scale: 1.3 + i * 0.08, opacity: 0 }}
             transition={{ duration: 2.8, delay, repeat: Infinity, ease: 'easeOut' }}
             style={{
               position: 'absolute', inset: 0, borderRadius: '50%',
-              border: `1px solid rgba(${lvl.rgb},0.55)`, pointerEvents: 'none',
+              border: `1px solid rgba(${lvl.rgb},0.4)`, pointerEvents: 'none',
             }}
           />
         ))}
 
-        {/* Wide ambient glow */}
-        <motion.div
-          animate={{ opacity: [0.6, 1, 0.6], scale: [1, 1.15, 1] }}
-          transition={{ duration: 3.5, repeat: Infinity }}
-          style={{
-            position: 'absolute', inset: `-${sz * 0.22}px`, borderRadius: '50%',
-            background: `radial-gradient(circle, rgba(${lvl.rgb},0.38) 0%, transparent 65%)`,
-            filter: 'blur(20px)', pointerEvents: 'none',
-          }}
-        />
-
-        {/* Rings */}
-        {rings.map((r, i) => (
-          <motion.div key={i}
-            animate={{ rotate: r.ccw ? -360 : 360 }}
-            transition={{ duration: r.dur, repeat: Infinity, ease: 'linear' }}
+        {/* Wide ambient glow — static on mobile, animated on desktop */}
+        {isMobile ? (
+          <div style={{
+            position: 'absolute', inset: `-${sz * 0.18}px`, borderRadius: '50%',
+            background: `radial-gradient(circle, rgba(${lvl.rgb},0.3) 0%, transparent 65%)`,
+            pointerEvents: 'none',
+          }} />
+        ) : (
+          <motion.div
+            animate={{ opacity: [0.6, 1, 0.6], scale: [1, 1.15, 1] }}
+            transition={{ duration: 3.5, repeat: Infinity }}
             style={{
-              position: 'absolute', inset: `-${r.r}px`, borderRadius: '50%',
-              border: `1px ${r.dash ? 'dashed' : 'solid'} rgba(${lvl.rgb},${i === 0 ? 0.65 : i === 1 ? 0.35 : 0.18})`,
-              willChange: 'transform', pointerEvents: 'none',
+              position: 'absolute', inset: `-${sz * 0.22}px`, borderRadius: '50%',
+              background: `radial-gradient(circle, rgba(${lvl.rgb},0.38) 0%, transparent 65%)`,
+              filter: 'blur(20px)', pointerEvents: 'none',
             }}
           />
+        )}
+
+        {/* Rings — CSS animation on mobile for better perf */}
+        {rings.map((r, i) => (
+          isMobile ? (
+            <div key={i} className={`neo-ring neo-ring-${r.ccw ? 'ccw' : 'cw'}`} style={{
+              position: 'absolute', inset: `-${r.r}px`, borderRadius: '50%',
+              border: `1px ${r.dash ? 'dashed' : 'solid'} rgba(${lvl.rgb},${i === 0 ? 0.5 : 0.25})`,
+              willChange: 'transform', pointerEvents: 'none',
+              animation: `${r.ccw ? 'neo-spin-ccw' : 'neo-spin-cw'} ${r.dur}s linear infinite`,
+            }} />
+          ) : (
+            <motion.div key={i}
+              animate={{ rotate: r.ccw ? -360 : 360 }}
+              transition={{ duration: r.dur, repeat: Infinity, ease: 'linear' }}
+              style={{
+                position: 'absolute', inset: `-${r.r}px`, borderRadius: '50%',
+                border: `1px ${r.dash ? 'dashed' : 'solid'} rgba(${lvl.rgb},${i === 0 ? 0.65 : i === 1 ? 0.35 : 0.18})`,
+                willChange: 'transform', pointerEvents: 'none',
+              }}
+            />
+          )
         ))}
 
-        {/* Orbiting dots */}
+        {/* Orbiting dots — desktop only */}
         {visible && dotData.map((d, i) => (
           <motion.div key={i}
             animate={{ rotate: 360 }}
@@ -86,20 +103,14 @@ function CircleNode({ visible }) {
         ))}
 
         {/* Core circle */}
-        <motion.div
-          animate={isMobile ? {} : {
-            boxShadow: [
-              `0 0 0 2px rgba(${lvl.rgb},0.9), 0 0 30px rgba(${lvl.rgb},0.7), 0 0 80px rgba(${lvl.rgb},0.5), 0 0 160px rgba(${lvl.rgb},0.25)`,
-              `0 0 0 2px rgba(${lvl.rgb},1), 0 0 50px rgba(${lvl.rgb},0.95), 0 0 120px rgba(${lvl.rgb},0.65), 0 0 240px rgba(${lvl.rgb},0.35)`,
-              `0 0 0 2px rgba(${lvl.rgb},0.9), 0 0 30px rgba(${lvl.rgb},0.7), 0 0 80px rgba(${lvl.rgb},0.5), 0 0 160px rgba(${lvl.rgb},0.25)`,
-            ],
-          }}
-          transition={{ duration: 2.5, repeat: Infinity }}
+        <div
           style={{
             position: 'absolute', inset: 0, borderRadius: '50%',
             background: `radial-gradient(circle at 38% 32%, rgba(${lvl.rgb},0.3) 0%, #07101e 60%)`,
             border: `2.5px solid rgba(${lvl.rgb},0.95)`,
-            boxShadow: isMobile ? `0 0 0 2px rgba(${lvl.rgb},0.85), 0 0 30px rgba(${lvl.rgb},0.5), 0 0 70px rgba(${lvl.rgb},0.2)` : undefined,
+            boxShadow: isMobile
+              ? `0 0 0 2px rgba(${lvl.rgb},0.85), 0 0 25px rgba(${lvl.rgb},0.4)`
+              : `0 0 0 2px rgba(${lvl.rgb},0.9), 0 0 30px rgba(${lvl.rgb},0.7), 0 0 80px rgba(${lvl.rgb},0.5), 0 0 160px rgba(${lvl.rgb},0.25)`,
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
             gap: 7,
           }}
@@ -111,7 +122,8 @@ function CircleNode({ visible }) {
             background: `linear-gradient(140deg,#fff8e8 0%,${lvl.colorLight} 30%,${lvl.color} 70%)`,
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
             color: 'transparent',
-            filter: `drop-shadow(0 0 24px rgba(${lvl.rgb},1))`,
+            filter: isMobile ? 'none' : `drop-shadow(0 0 24px rgba(${lvl.rgb},1))`,
+            textShadow: isMobile ? `0 0 18px rgba(${lvl.rgb},0.8)` : 'none',
           }}>{lvl.name}</span>
           <span style={{
             fontFamily: "'Montserrat',sans-serif", fontWeight: 700,
@@ -119,7 +131,7 @@ function CircleNode({ visible }) {
             color: `rgba(${lvl.rgb},1)`,
             textShadow: `0 0 14px rgba(${lvl.rgb},0.8)`,
           }}>{lvl.scadiq}</span>
-        </motion.div>
+        </div>
       </div>
 
       {/* Label below circle */}
@@ -346,6 +358,7 @@ export default function Ecosystem() {
   const ref = useRef(null);
   const visible = useInView(ref, { once: true, amount: 0.04 });
   const lvl = NEO;
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   return (
     <section ref={ref} style={{ background: '#040A14', position: 'relative', overflow: 'hidden', padding: 'clamp(4rem,8vw,7rem) 1.5rem' }}>
@@ -359,27 +372,38 @@ export default function Ecosystem() {
         WebkitMaskImage: 'radial-gradient(ellipse 90% 90% at 50% 45%,black,transparent)',
       }} />
 
-      {/* Atmosphere */}
-      <motion.div
-        animate={{ opacity: [0.5, 1, 0.5] }}
-        transition={{ duration: 5, repeat: Infinity }}
-        style={{
+      {/* Atmosphere — static on mobile, animated on desktop */}
+      {isMobile ? (
+        <div style={{
           position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
           width: '180vw', height: '75vh',
-          background: `radial-gradient(ellipse,rgba(${lvl.rgb},0.13) 0%,transparent 50%)`,
-          filter: 'blur(80px)', pointerEvents: 'none',
-        }}
-      />
-      <motion.div
-        animate={{ opacity: [0.4, 0.8, 0.4] }}
-        transition={{ duration: 7, repeat: Infinity, delay: 1 }}
-        style={{
-          position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
-          width: '180vw', height: '75vh',
-          background: `radial-gradient(ellipse,rgba(${lvl.rgb},0.06) 0%,transparent 50%)`,
-          filter: 'blur(60px)', pointerEvents: 'none',
-        }}
-      />
+          background: `radial-gradient(ellipse,rgba(${lvl.rgb},0.10) 0%,transparent 50%)`,
+          pointerEvents: 'none',
+        }} />
+      ) : (
+        <>
+          <motion.div
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 5, repeat: Infinity }}
+            style={{
+              position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
+              width: '180vw', height: '75vh',
+              background: `radial-gradient(ellipse,rgba(${lvl.rgb},0.13) 0%,transparent 50%)`,
+              filter: 'blur(80px)', pointerEvents: 'none',
+            }}
+          />
+          <motion.div
+            animate={{ opacity: [0.4, 0.8, 0.4] }}
+            transition={{ duration: 7, repeat: Infinity, delay: 1 }}
+            style={{
+              position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
+              width: '180vw', height: '75vh',
+              background: `radial-gradient(ellipse,rgba(${lvl.rgb},0.06) 0%,transparent 50%)`,
+              filter: 'blur(60px)', pointerEvents: 'none',
+            }}
+          />
+        </>
+      )}
 
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg,transparent,rgba(197,165,90,0.55) 30%,rgba(197,165,90,0.55) 70%,transparent)' }} />
 
@@ -441,45 +465,115 @@ export default function Ecosystem() {
           <ContentReveal />
         </motion.div>
 
-        {/* ECOSYSTEM LAYERS FOOTER */}
+        {/* SECTION TITLE — 3 Capas */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={visible ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, delay: 0.7 }}
+          style={{ textAlign: 'center', marginTop: 'clamp(3rem,5vw,5rem)', marginBottom: 'clamp(1.5rem,3vw,2.5rem)' }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14, marginBottom: '0.8rem' }}>
+            <div style={{ height: 1, width: 50, background: 'linear-gradient(90deg,transparent,rgba(197,165,90,0.5))' }} />
+            <span style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 800, fontSize: '0.6rem', letterSpacing: '0.35em', color: '#C5A55A', textTransform: 'uppercase' }}>
+              3 Capas · 1 Ecosistema
+            </span>
+            <div style={{ height: 1, width: 50, background: 'linear-gradient(90deg,rgba(197,165,90,0.5),transparent)' }} />
+          </div>
+          <p style={{
+            fontFamily: "'Montserrat',sans-serif", fontWeight: 700,
+            fontSize: 'clamp(0.88rem,1.2vw,0.95rem)', color: '#FFFFFF',
+            margin: 0, maxWidth: '520px', marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.6,
+          }}>
+            NEO es solo el inicio. Lo que sigue multiplica todo lo que construyes aquí.
+          </p>
+        </motion.div>
+
+        {/* ECOSYSTEM LAYERS */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={visible ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7, delay: 0.8 }}
+          className="capas-grid"
           style={{
-            marginTop: 'clamp(3rem,5vw,5rem)',
             display: 'grid',
             gridTemplateColumns: 'repeat(3,1fr)',
-            border: '1px solid rgba(197,165,90,0.15)',
-            borderRadius: 8, overflow: 'hidden',
+            gap: 0,
+            border: '1px solid rgba(197,165,90,0.18)',
+            borderRadius: 10, overflow: 'hidden',
           }}
         >
           {[
-            { num: '1', name: 'Bootcamp Vivencial', items: 'NEO — 2 Días Intensivos',   color: '#C5A55A', rgb: '197,165,90'  },
-            { num: '2', name: 'Private Business Network', items: 'Pods · Eventos · Métricas', color: '#8AAFD4', rgb: '138,175,212' },
-            { num: '3', name: 'Opportunity Platform',     items: 'Deals · Alianzas · Capital', color: '#D4BA7A', rgb: '212,186,122' },
+            { num: '1', name: 'Bootcamp Vivencial', items: 'NEO — 2 Días Intensivos', sub: 'Tu punto de partida.', color: '#C5A55A', rgb: '197,165,90' },
+            { num: '2', name: 'Private Business Network', items: 'Pods · Eventos · Métricas', sub: 'Creces con los que ya están adentro.', color: '#8AAFD4', rgb: '138,175,212' },
+            { num: '3', name: 'Opportunity Platform', items: 'Deals · Alianzas · Capital', sub: 'Donde el ecosistema trabaja para ti.', color: '#D4BA7A', rgb: '212,186,122' },
           ].map((capa, i) => (
             <div key={i} style={{
-              padding: 'clamp(1.2rem,2vw,1.7rem)',
-              background: i === 2
-                ? 'linear-gradient(135deg,rgba(212,186,122,0.07) 0%,rgba(4,10,20,0.98) 100%)'
-                : 'rgba(4,10,20,0.98)',
-              borderRight: i < 2 ? '1px solid rgba(197,165,90,0.1)' : 'none',
+              padding: 'clamp(1.6rem,3vw,2.4rem)',
+              background: `linear-gradient(160deg,rgba(${capa.rgb},0.08) 0%,rgba(4,10,20,0.98) 100%)`,
+              borderRight: i < 2 ? '1px solid rgba(197,165,90,0.12)' : 'none',
+              position: 'relative',
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '0.6rem' }}>
-                <span style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 900, fontSize: '0.58rem', letterSpacing: '0.3em', color: `rgba(${capa.rgb},0.5)`, textTransform: 'uppercase' }}>
+              {/* Top color bar */}
+              <div style={{
+                position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
+                background: `linear-gradient(90deg, ${capa.color}, rgba(${capa.rgb},0.15))`,
+              }} />
+
+              {/* Number badge */}
+              <div style={{
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                width: 28, height: 28, borderRadius: '50%',
+                border: `1.5px solid rgba(${capa.rgb},0.5)`,
+                background: `rgba(${capa.rgb},0.08)`,
+                marginBottom: '1rem',
+              }}>
+                <span style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 900, fontSize: '0.7rem', color: capa.color }}>
+                  {capa.num}
+                </span>
+              </div>
+
+              {/* Label */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '0.8rem' }}>
+                <span style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 900, fontSize: '0.65rem', letterSpacing: '0.28em', color: capa.color, textTransform: 'uppercase' }}>
                   Capa {capa.num}
                 </span>
-                <div style={{ flex: 1, height: 1, background: `linear-gradient(90deg,rgba(${capa.rgb},0.3),transparent)` }} />
+                <div style={{ flex: 1, height: 1, background: `linear-gradient(90deg,rgba(${capa.rgb},0.4),transparent)` }} />
               </div>
-              <div style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 800, fontSize: 'clamp(0.85rem,1.3vw,1rem)', color: '#FFFFFF', marginBottom: 4 }}>{capa.name}</div>
-              <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: '0.78rem', color: '#FFFFFF', lineHeight: 1.6 }}>{capa.items}</div>
+
+              {/* Title */}
+              <div style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 800, fontSize: 'clamp(1.05rem,1.6vw,1.2rem)', color: '#FFFFFF', marginBottom: 8, lineHeight: 1.25 }}>{capa.name}</div>
+
+              {/* Items */}
+              <div style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 500, fontSize: 'clamp(0.95rem,1.3vw,1.05rem)', color: '#FFFFFF', lineHeight: 1.7, marginBottom: 14 }}>{capa.items}</div>
+
+              {/* Subtitle */}
+              <div style={{
+                fontFamily: "'Montserrat',sans-serif", fontWeight: 400,
+                fontSize: 'clamp(0.95rem,1.3vw,1.05rem)', color: '#FFFFFF', lineHeight: 1.5,
+              }}>{capa.sub}</div>
             </div>
           ))}
         </motion.div>
 
       </div>
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg,transparent,rgba(197,165,90,0.3) 30%,rgba(197,165,90,0.3) 70%,transparent)' }} />
+
+      <style>{`
+        @keyframes neo-spin-cw { to { transform: rotate(360deg); } }
+        @keyframes neo-spin-ccw { to { transform: rotate(-360deg); } }
+        @media (max-width: 768px) {
+          .capas-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .capas-grid > div {
+            border-right: none !important;
+            border-bottom: 1px solid rgba(197,165,90,0.1);
+          }
+          .capas-grid > div:last-child {
+            border-bottom: none;
+          }
+        }
+      `}</style>
     </section>
   );
 }

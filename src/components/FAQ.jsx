@@ -335,6 +335,7 @@ export default function FAQ() {
           </p>
           <motion.a
             href="#aplicar"
+            onClick={e => { if (window.innerWidth < 860) { e.preventDefault(); const el = document.getElementById('formulario'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }}
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.97 }}
             style={{

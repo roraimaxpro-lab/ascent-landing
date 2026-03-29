@@ -333,6 +333,7 @@ export default function ForWho() {
             "Si llevas tiempo buscando el tipo de experiencia que realmente mueva el marcador, ASCENT fue diseñado para ti."
           </p>
           <motion.a href="#aplicar"
+            onClick={e => { if (window.innerWidth < 860) { e.preventDefault(); const el = document.getElementById('formulario'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }}
             whileHover={{ scale:1.04, boxShadow:'0 0 40px rgba(197,165,90,0.55)' }}
             whileTap={{ scale:0.97 }}
             style={{

@@ -10,8 +10,27 @@ const app = express();
 const resend = new Resend(process.env.RESEND_API_KEY);
 const PORT = process.env.PORT || 3001;
 
-app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:4173'] }));
+app.use(cors({ origin: [/^http:\/\/localhost:\d+$/] }));
 app.use(express.json());
+
+app.post('/api/validate-email', async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ valid: false });
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) return res.json({ valid: false, reason: 'format' });
+
+  const domain = email.split('@')[1];
+  try {
+    const dns = await import('dns');
+    const { promisify } = await import('util');
+    const resolveMx = promisify(dns.default.resolveMx);
+    const records = await resolveMx(domain);
+    return res.json({ valid: records && records.length > 0, reason: records?.length ? undefined : 'domain' });
+  } catch {
+    return res.json({ valid: false, reason: 'domain' });
+  }
+});
 
 app.post('/api/contact', async (req, res) => {
   const { name, email, phone, business, challenge } = req.body;
@@ -37,8 +56,8 @@ app.post('/api/contact', async (req, res) => {
 
   try {
     const { data, error } = await resend.emails.send({
-      from: process.env.RESEND_FROM,
-      to: [process.env.CONTACT_EMAIL],
+      from: process.env.RESEND_FROM_EMAIL,
+      to: [process.env.RESEND_REPLY_TO],
       replyTo: email,
       subject: `Nueva aplicación ASCENT NEO — ${name}`,
       html: `
