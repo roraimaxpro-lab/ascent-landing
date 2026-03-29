@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import './App.css';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -10,6 +11,16 @@ import ApplicationForm from './components/ApplicationForm';
 import Footer from './components/Footer';
 
 export default function App() {
+  useEffect(() => {
+    const hash = window.location.hash.slice(1);
+    if (hash) {
+      setTimeout(() => {
+        const el = document.getElementById(hash);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 600);
+    }
+  }, []);
+
   return (
     <>
       <Navbar />
