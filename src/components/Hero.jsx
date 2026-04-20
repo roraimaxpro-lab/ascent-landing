@@ -343,7 +343,7 @@ export default function Hero() {
             fontSize: 'clamp(1rem,2vw,1.45rem)', color: '#FFFFFF',
             letterSpacing: '0.01em', lineHeight: 1.3, margin: '0 0 0.25rem 0',
           }}>
-            ¿Cuántos eventos has asistido
+            ¿A cuántos eventos has asistido
           </p>
 
           {/* Impact line 1 — METALLIC GOLD */}
@@ -381,7 +381,7 @@ export default function Hero() {
             color: '#FFFFFF', textTransform: 'uppercase',
             textShadow: '0 0 50px rgba(197,165,90,0.14), 0 2px 6px rgba(0,0,0,0.7)',
           }}>
-            Cambiara?
+            Cambie?
           </h1>
         </motion.div>
 
