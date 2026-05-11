@@ -7,9 +7,9 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { name, email, phone, business, challenge } = req.body;
+  const { name, email, phone, business, challenge, foundUs, referrerName } = req.body;
 
-  if (!name || !email || !business || !challenge) {
+  if (!name || !email || !business || !challenge || !foundUs) {
     return res.status(400).json({ error: 'Todos los campos son requeridos.' });
   }
 
@@ -27,6 +27,20 @@ export default async function handler(req, res) {
       <div style="color:#8A9AB5;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:6px;">TEL&Eacute;FONO</div>
       <div style="color:#FFFFFF;font-size:15px;">${phone}</div>
     </div>` : '';
+
+  const hasReferrer = foundUs === 'Me refiri\u00f3 alguien' && referrerName;
+
+  const referrerBlock = hasReferrer ? `
+    <div style="padding:14px 20px;">
+      <div style="color:#8A9AB5;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:6px;">REFERIDO POR</div>
+      <div style="color:#FFFFFF;font-size:15px;font-weight:600;">${referrerName}</div>
+    </div>` : '';
+
+  const foundUsBlock = `
+    <div style="padding:14px 20px;${hasReferrer ? 'border-bottom:1px solid rgba(197,165,90,0.1);' : ''}">
+      <div style="color:#8A9AB5;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:6px;">C&Oacute;MO NOS ENCONTR&Oacute;</div>
+      <div style="color:#C5A55A;font-size:15px;font-weight:600;">${foundUs}</div>
+    </div>`;
 
   try {
     const { data, error } = await resend.emails.send({
@@ -79,10 +93,12 @@ export default async function handler(req, res) {
                 <div style="color:#8A9AB5;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:6px;">DEDICACI&Oacute;N</div>
                 <div style="color:#FFFFFF;font-size:15px;">${business}</div>
               </div>
-              <div style="padding:14px 20px;">
+              <div style="padding:14px 20px;border-bottom:1px solid rgba(197,165,90,0.1);">
                 <div style="color:#8A9AB5;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:6px;">RETO PRINCIPAL</div>
                 <div style="color:#FFFFFF;font-size:15px;line-height:1.6;">${challenge}</div>
               </div>
+              ${foundUsBlock}
+              ${referrerBlock}
             </div>
 
             <!-- CTA -->

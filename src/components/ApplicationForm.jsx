@@ -104,6 +104,66 @@ function EmailField({ value, onChange, emailStatus }) {
   );
 }
 
+/* ── Select Field (gold-themed dropdown) ── */
+function SelectField({ label, name, value, onChange, options, placeholder = 'Selecciona una opción' }) {
+  const [focused, setFocused] = useState(false);
+  return (
+    <div>
+      <label style={{
+        display: 'flex', alignItems: 'center', gap: '8px',
+        fontFamily: "'Montserrat',sans-serif", fontWeight: 700,
+        fontSize: '0.6rem', letterSpacing: '0.28em', textTransform: 'uppercase',
+        color: focused ? '#E8CC88' : '#C5A55A',
+        marginBottom: '8px', transition: 'color 0.25s',
+      }}>
+        <span style={{ width: '16px', height: '1px', background: focused ? '#C5A55A' : 'rgba(197,165,90,0.3)', transition: 'background 0.25s' }} />
+        {label}
+      </label>
+      <div style={{ position: 'relative' }}>
+        <select
+          name={name}
+          required
+          value={value}
+          onChange={onChange}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          style={{
+            width: '100%', boxSizing: 'border-box',
+            background: focused ? 'rgba(197,165,90,0.04)' : 'rgba(11,22,36,0.8)',
+            border: `1px solid ${focused ? 'rgba(197,165,90,0.55)' : 'rgba(197,165,90,0.12)'}`,
+            borderRadius: '3px',
+            padding: '13px 38px 13px 16px',
+            fontFamily: "'Montserrat',sans-serif",
+            fontSize: '0.88rem',
+            color: value ? '#FFFFFF' : 'rgba(255,255,255,0.55)',
+            outline: 'none',
+            appearance: 'none',
+            WebkitAppearance: 'none',
+            MozAppearance: 'none',
+            cursor: 'pointer',
+            transition: 'border-color 0.25s, background 0.25s, box-shadow 0.25s',
+            boxShadow: focused ? '0 0 20px rgba(197,165,90,0.1), inset 0 1px 0 rgba(197,165,90,0.06)' : 'none',
+          }}
+        >
+          <option value="" disabled>{placeholder}</option>
+          {options.map(opt => (
+            <option key={opt} value={opt} style={{ background: '#0B1624', color: '#FFFFFF' }}>{opt}</option>
+          ))}
+        </select>
+        {/* Custom dropdown arrow */}
+        <div style={{
+          position: 'absolute', right: '14px', top: '50%',
+          transform: 'translateY(-50%)',
+          pointerEvents: 'none',
+          color: focused ? '#E8CC88' : '#C5A55A',
+          fontSize: '10px',
+          transition: 'color 0.25s',
+        }}>▼</div>
+      </div>
+    </div>
+  );
+}
+
 /* ── Phone Field with country code picker ── */
 function PhoneField({ value, onChange }) {
   const [focused, setFocused] = useState(false);
@@ -163,7 +223,7 @@ export default function ApplicationForm() {
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
   const [serverError, setServerError] = useState('');
-  const [form, setForm] = useState({ name: '', email: '', phone: '', business: '', challenge: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', business: '', challenge: '', foundUs: '', referrerName: '' });
   const [emailStatus, setEmailStatus] = useState(''); // '' | 'checking' | 'valid' | 'invalid'
   const emailTimer = useRef(null);
   const handle = e => setForm({ ...form, [e.target.name]: e.target.value });
@@ -203,16 +263,31 @@ export default function ApplicationForm() {
       setServerError('Ingresa un correo electrónico válido (ej: tu@email.com)');
       return;
     }
+    if (!form.foundUs) {
+      setServerError('Por favor indica cómo nos encontraste.');
+      return;
+    }
+    if (form.foundUs === 'Me refirió alguien' && !form.referrerName.trim()) {
+      setServerError('Por favor indica el nombre de la persona que te refirió.');
+      return;
+    }
     setSending(true);
     setServerError('');
     try {
+      const cleanPhone = form.phone && form.phone.replace(/[\s+\-()]/g, '').length > 4 ? form.phone : '';
+      const payload = {
+        ...form,
+        phone: cleanPhone,
+        referrerName: form.foundUs === 'Me refirió alguien' ? form.referrerName.trim() : '',
+      };
+
       // Save to Convex database (if configured)
       if (convexSiteUrl) {
         try {
           await fetch(`${convexSiteUrl}/submit-application`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...form, phone: form.phone && form.phone.replace(/[\s+\-()]/g, '').length > 4 ? form.phone : '' }),
+            body: JSON.stringify(payload),
           });
         } catch {
           // Convex save failed silently — email still sends
@@ -223,7 +298,7 @@ export default function ApplicationForm() {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -548,6 +623,34 @@ export default function ApplicationForm() {
                     <Field label="¿Cuál es tu mayor reto ahora mismo?" name="challenge" as="textarea"
                       placeholder="En 2-3 líneas, el reto más importante que estás enfrentando en tu negocio."
                       value={form.challenge} onChange={handle} />
+
+                    <SelectField
+                      label="¿Cómo nos encontraste?"
+                      name="foundUs"
+                      value={form.foundUs}
+                      onChange={handle}
+                      options={['Instagram', 'Tik Tok', 'Búsqueda Web', 'Conexus', 'Me refirió alguien']}
+                    />
+
+                    <AnimatePresence>
+                      {form.foundUs === 'Me refirió alguien' && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                          animate={{ opacity: 1, height: 'auto', marginTop: 0 }}
+                          exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                          style={{ overflow: 'hidden' }}
+                        >
+                          <Field
+                            label="¿Quién te refirió?"
+                            name="referrerName"
+                            placeholder="Nombre completo de la persona"
+                            value={form.referrerName}
+                            onChange={handle}
+                          />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
 
                     {/* Error message */}
                     {serverError && (
